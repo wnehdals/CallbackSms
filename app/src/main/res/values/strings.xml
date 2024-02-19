@@ -1,0 +1,37 @@
+<resources>
+    <string name="app_name">알리자</string>
+    <string name="str_permission_guide_1">알리자 서비스를 경험하기 위해 다음의 필수 권한 및 설정 허용에 동의해 주세요.</string>
+    <string name="str_permission_guide_2">기본 발신 발신 번호표시 앱</string>
+    <string name="str_permission_guide_3">식별 기능을 최대한 화룡하려면 Google 정책을 준수하도록 권한을 부여하는것에 동의하세요.</string>
+    <string name="str_permission_guide_4">필수 권한</string>
+    <string name="str_permission_guide_5">기능을 사용하기 전에 다음 필수 권한을 허용해야 합니다. 전화, 통화기록, SMS, 전화 연락처</string>
+    <string name="str_permission_guide_6">다른 앱 위에 표시</string>
+    <string name="str_permission_guide_7">발신자 식별을 위한 권한입니다.</string>
+    <string name="str_permission_guide_8">알겠습니다.</string>
+    <string name="str_permission_guide_9">전화 수신을 감지하기 위한 권한입니다.</string>
+    <string name="str_permission_guide_10">발신 번호 감지를 위한 권한입니다.</string>
+    <string name="str_permission_guide_11">발신 번호를 연락처와 비교하기 위한 권한입니다.</string>
+    <string name="str_permission_guide_12">SMS 메시지 전송을 위한 권한입니다.</string>
+    <string name="str_permission_guide_13">저장공간, 알림</string>
+    <string name="str_permission_guide_14">접근권한 변경 방법</string>
+    <string name="str_permission_guide_15">휴대폰 설정 > 앱 > 알리자</string>
+    <string name="str_permission_guide_16">저장공간, 알림</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="str_home">홈</string>
+    <string name="str_contract">연락처</string>
+    <string name="str_select_photo">이미지 선택</string>
+    <string name="str_app_finish_guide_toast">\'뒤로\' 버튼을 한번 더 누르시면 종료됩니다.</string>
+    <string name="str_phone">전화</string>
+    <string name="str_phone_record">통화기록</string>
+    <string name="en_sms">SMS</string>
+    <string name="str_select_permission">선택 접근 권한</string>
+    <string name="str_search_contact_hint">내 연락처 검색</string>
+    <string name="str_contents">내용</string>
+    <string name="str_callback_sms_setting">콜백문자설정</string>
+    <string name="str_complete">완료</string>
+    <string name="str_contact_detail">연락처 상세</string>
+    <string name="str_attach_photo">사진 첨부</string>
+    <string name="str_add_image">이미지 추가</string>
+    <string name="str_inquiry_file_size_error">파일 첨부는 %dMB 까지만 가능합니다.</string>
+</resources>

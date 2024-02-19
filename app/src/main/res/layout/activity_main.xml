@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/white">
+
+
+        <androidx.fragment.app.FragmentContainerView
+            android:id="@+id/fv_main"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            app:layout_constraintBottom_toTopOf="@+id/ll_bottom_main"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"/>
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="4dp"
+            android:background="@color/gray_300"
+            app:layout_constraintBottom_toBottomOf="parent"
+            android:layout_marginBottom="48dp"/>
+
+        <!-- myschedule -->
+        <LinearLayout
+            android:id="@+id/ll_bottom_main"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:orientation="horizontal"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent">
+            <LinearLayout
+                android:id="@+id/ll_home"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:orientation="vertical"
+                android:gravity="center">
+                <androidx.appcompat.widget.AppCompatImageView
+                    android:id="@+id/iv_home"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:src="@drawable/sel_ic_home"/>
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/tv_home"
+                    style="@style/Paragraph.XS"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/c_bottom_text"
+                    android:text="@string/str_home"/>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/ll_contract"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:orientation="vertical"
+                android:gravity="center">
+                <androidx.appcompat.widget.AppCompatImageView
+                    android:id="@+id/iv_contract"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:src="@drawable/sel_ic_contract"/>
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/tv_contract"
+                    style="@style/Paragraph.XS"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/c_bottom_text"
+                    android:text="@string/str_contract"/>
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</layout>

@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="NCompoundButton">
+        <attr name="android:enabled" />
+        <attr name="android:checked" />
+    </declare-styleable>
+    <declare-styleable name="TextArea">
+        <attr name="android:inputType" />
+        <attr name="android:hint" />
+        <attr name="android:text" />
+    </declare-styleable>
+</resources>

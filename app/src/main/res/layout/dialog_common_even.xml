@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/bg_r8_f_white"
+        android:orientation="vertical"
+        android:paddingBottom="16dp">
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/common_dialog_even_title"
+            style="@style/Label.L"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:layout_marginHorizontal="20dp"
+            android:paddingVertical="16dp"
+            tools:text="로그인이"/>
+        <View
+            android:id="@+id/common_dialog_even_divide"
+            android:layout_width="match_parent"
+            android:layout_height="2dp"
+            android:background="@color/gray_100"/>
+        <TextView
+            android:id="@+id/common_dialog_even_msg"
+            style="@style/Paragraph.M"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="20dp"
+            android:layout_marginTop="20dp"
+            tools:text="로그인이 실패되었습니다.로그인이 실패되었습니다.로그인이 실패되었습니다.로그인이 실패되었습니다."/>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:layout_marginHorizontal="20dp"
+            android:orientation="horizontal">
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/tv_dialog_common_even_left"
+                style="@style/SButton"
+                android:layout_marginEnd="8dp"
+                android:visibility="gone"
+                tools:text="라벨라벨라벨라벨라벨라벨라벨라벨라벨"
+                android:ellipsize="end"
+                android:layout_weight="1"/>
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/tv_dialog_common_even_right"
+                style="@style/FButton"
+                android:ellipsize="end"
+                android:layout_weight="1"
+                tools:text="라벨"/>
+
+        </LinearLayout>
+    </LinearLayout>
+
+</layout>

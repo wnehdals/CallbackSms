@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="teal_200">#FF03DAC5</color>
+    <color name="teal_700">#FF018786</color>
+    <color name="c_173f75">#173f75</color>
+
+    <!--<color name="colorAccent">#04B8AB</color> -->
+    <color name="c_ffffffff">#00000000</color>
+    <color name="c_cccccc">#CCCCCC</color>
+    <color name="white">#FFFFFF</color>
+    <color name="gray_50">#F6F6F6</color>
+    <color name="gray_100">#EEEEEE</color>
+    <color name="gray_200">#E2E2E2</color>
+    <color name="gray_300">#CBCBCB</color>
+    <color name="gray_400">#AFAFAF</color>
+    <color name="gray_500">#6B6B6B</color>
+    <color name="gray_600">#545454</color>
+    <color name="gray_700">#333333</color>
+    <color name="gray_800">#1F1F1F</color>
+    <color name="gray_900">#141414</color>
+    <color name="black">#000000</color>
+
+    <color name="red_50">#FFEFED</color>
+    <color name="red_100">#FED7D2</color>
+    <color name="red_200">#F1998E</color>
+    <color name="red_300">#E85C4A</color>
+    <color name="red_400">#E11900</color>
+    <color name="red_500">#AB1300</color>
+    <color name="red_600">#870F00</color>
+    <color name="red_700">#5A0A00</color>
+
+
+    <color name="green_200">#04B8AB</color>
+
+    <color name="blue_50">#EFF3FE</color>
+    <color name="blue_100">#D4E2FC</color>
+    <color name="blue_200">#A0BFF8</color>
+    <color name="blue_300">#5B91F5</color>
+    <color name="blue_400">#276EF1</color>
+    <color name="blue_500">#1E54B7</color>
+    <color name="blue_600">#174291</color>
+    <color name="blue_700">#102C60</color>
+
+    <color name="purple_50">#F4F1FA</color>
+    <color name="purple_100">#E3DDF2</color>
+    <color name="purple_200">#C1B5E3</color>
+    <color name="purple_300">#957FCE</color>
+    <color name="purple_400">#7356BF</color>
+    <color name="purple_500">#574191</color>
+    <color name="purple_600">#453473</color>
+    <color name="purple_700">#2E224C</color>
+
+
+    <color name="transparent">#00ffffff</color>
+
+    <color name="c_f7f9fb">#F7F9FB</color>
+    <color name="c_f3f7fd">#F3F7FD</color>
+    <color name="c_edf8dd">#EDF8DD</color>
+    <color name="c_e6f7fb">#E6F7FB</color>
+    <color name="c_e9f4ff">#E9F4FF</color>
+    <color name="c_f1f1ff">#F1F1FF</color>
+    <color name="c_ffeeee">#FFEEEE</color>
+    <color name="c_fff1d6">#FFF1D6</color>
+
+
+    <!-- transparent black color -->
+    <color name="black_t_05">#0D000000</color>
+    <color name="black_t_10">#1A000000</color>
+    <color name="black_t_15">#26000000</color>
+    <color name="black_t_20">#33000000</color>
+    <color name="black_t_25">#40000000</color>
+    <color name="black_t_30">#4D000000</color>
+    <color name="black_t_35">#59000000</color>
+    <color name="black_t_40">#66000000</color>
+    <color name="black_t_45">#73000000</color>
+    <color name="black_t_50">#80000000</color>
+    <color name="black_t_55">#8C000000</color>
+    <color name="black_t_60">#99000000</color>
+    <color name="black_t_65">#A6000000</color>
+    <color name="black_t_70">#B3000000</color>
+    <color name="black_t_75">#BF000000</color>
+    <color name="black_t_80">#CC000000</color>
+    <color name="black_t_85">#D9000000</color>
+    <color name="black_t_90">#E6000000</color>
+    <color name="black_t_95">#F2000000</color>
+
+    <color name="white_t_05">#0DFFFFFF</color>
+    <color name="white_t_10">#1AFFFFFF</color>
+    <color name="white_t_15">#26FFFFFF</color>
+    <color name="white_t_20">#33FFFFFF</color>
+    <color name="white_t_25">#40FFFFFF</color>
+    <color name="white_t_30">#4DFFFFFF</color>
+    <color name="white_t_35">#59FFFFFF</color>
+    <color name="white_t_40">#66FFFFFF</color>
+    <color name="white_t_45">#73FFFFFF</color>
+    <color name="white_t_50">#80FFFFFF</color>
+    <color name="white_t_55">#8CFFFFFF</color>
+    <color name="white_t_60">#99FFFFFF</color>
+    <color name="white_t_65">#A6FFFFFF</color>
+    <color name="white_t_70">#B3FFFFFF</color>
+    <color name="white_t_75">#BFFFFFFF</color>
+    <color name="white_t_80">#CCFFFFFF</color>
+    <color name="white_t_85">#D9FFFFFF</color>
+    <color name="white_t_90">#E6FFFFFF</color>
+    <color name="white_t_95">#F2FFFFFF</color>
+
+    <color name="gray500_t_40">#666B6B6B</color>
+</resources>
