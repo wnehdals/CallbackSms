@@ -3,6 +3,7 @@ package com.jdm.alija.presentation.util
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
+import android.graphics.Bitmap
 import android.net.Uri
 import android.telephony.SmsManager
 import com.google.android.mms.ContentType
@@ -14,6 +15,7 @@ import com.google.android.mms.pdu_alt.PduPart
 import com.google.android.mms.pdu_alt.SendReq
 import dagger.hilt.android.qualifiers.ApplicationContext
 import org.apache.commons.io.FileUtils
+import java.io.ByteArrayOutputStream
 import java.io.File
 import javax.inject.Inject
 
@@ -29,15 +31,24 @@ class SmsUtil @Inject constructor(
 
     }
     fun sendTextMessage(mobile: String, text: String) {
-        val sentPendingIntent = PendingIntent.getBroadcast(context, 0, Intent("SMS_SENT"), PendingIntent.FLAG_IMMUTABLE)
-        val deliveredPendingIntent = PendingIntent.getBroadcast(context, 0, Intent("SMS_DELIVERED"), PendingIntent.FLAG_IMMUTABLE)
-        smsManager.sendTextMessage(mobile, null, text, sentPendingIntent, deliveredPendingIntent)
-    }
-    fun sendImgMessage(contextUri: Uri) {
-        val sentPendingIntent = PendingIntent.getBroadcast(context, 0, Intent("SMS_SENT"), PendingIntent.FLAG_IMMUTABLE)
-        val deliveredPendingIntent = PendingIntent.getBroadcast(context, 0, Intent("SMS_DELIVERED"), PendingIntent.FLAG_IMMUTABLE)
+        if (text.length > 70) {
+            val part = smsManager.divideMessage(text)
+            smsManager.sendMultipartTextMessage(mobile, null, part, null, null)
+        } else {
+            val sentPendingIntent = PendingIntent.getBroadcast(context, 0, Intent("SMS_SENT"), PendingIntent.FLAG_IMMUTABLE)
+            val deliveredPendingIntent = PendingIntent.getBroadcast(context, 0, Intent("SMS_DELIVERED"), PendingIntent.FLAG_IMMUTABLE)
+            smsManager.sendTextMessage(mobile, null, text, sentPendingIntent, deliveredPendingIntent)
+        }
 
-        smsManager.sendMultimediaMessage(context, contextUri, null, null, sentPendingIntent)
+    }
+    fun sendImgMessage(mobile: String, bitmap: Bitmap) {
+        val stream = ByteArrayOutputStream()
+        bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream)
+        val byteArray = stream.toByteArray()
+        val sentPendingIntent = PendingIntent.getBroadcast(context, 0, Intent("SMS_SENT"), PendingIntent.FLAG_IMMUTABLE)
+        val deliveredPendingIntent = PendingIntent.getBroadcast(context, 0, Intent("SMS_DELIVERED"), PendingIntent.FLAG_IMMUTABLE)
+        smsManager.sendDataMessage(mobile, null, 8091,  byteArray, null, null)
+        //smsManager.sendMultimediaMessage(context, contextUri, null, null, sentPendingIntent)
     }
     private fun buildPdu(file: File): ByteArray? {
         val sendRequestPdu = SendReq()

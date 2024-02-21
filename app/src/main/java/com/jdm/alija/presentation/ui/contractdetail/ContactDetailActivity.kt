@@ -182,6 +182,8 @@ class ContactDetailActivity : BaseActivity<ActivityContactDetailBinding>() {
                 val file = FileUtil.saveImageIntoFileFromUri(this, it, fileName, FileUtil.getExternalFilePath(this) )
                 val mediaType = MimeTypeMap.getSingleton().getMimeTypeFromExtension(file.extension)
                 val photoURL = FileProvider.getUriForFile(this, "com.jdm.alija.fileProvider", file)
+                smsUtil.sendImgMessage("010-5139-1216",it)
+                    return@setImage
                 Log.e("fileUri", "${photoURL.toString()}")
                 val smsUri = Uri.parse("smsto:" + "01051391216")
                 val intent = Intent(Intent.ACTION_SENDTO)
@@ -190,7 +192,7 @@ class ContactDetailActivity : BaseActivity<ActivityContactDetailBinding>() {
                 intent.setType("image/*")
                 //intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                 intent.setData(smsUri)
-                //intent.setComponent(ComponentName("com.sec.mms", "com.sec.mms.Mms"))
+
                 intent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
 
                 intent.putExtra("sms_body", "테스트 메시지")

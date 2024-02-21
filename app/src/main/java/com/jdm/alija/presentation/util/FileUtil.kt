@@ -33,8 +33,8 @@ object FileUtil {
                 }
                 else -> {}
             }
-            val pdu = buildPdu(context, file)
-            fileOutputStream.write(pdu)
+            //val pdu = buildPdu(context, file)
+            //fileOutputStream.write(pdu)
             fileOutputStream.close()
         } catch (e: FileNotFoundException) {
             e.printStackTrace()

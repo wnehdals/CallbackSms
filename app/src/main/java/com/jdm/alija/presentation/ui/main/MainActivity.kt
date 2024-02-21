@@ -12,7 +12,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import com.jdm.alija.R
-import com.jdm.alija.SmsService
+import com.jdm.alija.presentation.service.SmsService
 import com.jdm.alija.base.BaseActivity
 import com.jdm.alija.base.BaseFragment
 import com.jdm.alija.databinding.ActivityMainBinding
@@ -22,8 +22,6 @@ import com.jdm.alija.presentation.util.Const.ACTION_START_LOCATION_SERVICE
 import com.jdm.alija.presentation.util.Const.ACTION_STOP_LOCATION_SERVICE
 import com.jdm.alija.presentation.util.Const.SERVICE_NAME
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
 @AndroidEntryPoint

@@ -1,4 +1,4 @@
-package com.jdm.alija
+package com.jdm.alija.presentation.service
 
 import android.app.Notification
 import android.app.NotificationChannel
@@ -9,12 +9,13 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Build
 import android.os.IBinder
-import android.provider.MediaStore
 import android.util.Log
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
+import com.jdm.alija.BuildConfig
+import com.jdm.alija.R
 import com.jdm.alija.domain.repository.SmsRepository
 import com.jdm.alija.presentation.ui.main.MainActivity
 import com.jdm.alija.presentation.util.Const.ACTION_START_LOCATION_SERVICE
@@ -23,7 +24,6 @@ import com.jdm.alija.presentation.util.Const.LOCATION_SERVICE_ID
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
 import java.io.File
@@ -107,9 +107,9 @@ class SmsService : Service() {
             .setContentTitle(title)
             .setContentText(body)
             .setSmallIcon(
-                R.drawable.ic_launcher_foreground
+                R.drawable.ic_noti
             )
-            .setColor(ContextCompat.getColor(applicationContext, R.color.green_200))
+            .setColor(ContextCompat.getColor(applicationContext, R.color.blue_400))
             .setContentIntent(pendingIntent)
             .setPriority(NotificationCompat.PRIORITY_MAX)
             .setOngoing(setOnGoing)

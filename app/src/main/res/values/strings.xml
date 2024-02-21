@@ -34,4 +34,10 @@
     <string name="str_attach_photo">사진 첨부</string>
     <string name="str_add_image">이미지 추가</string>
     <string name="str_inquiry_file_size_error">파일 첨부는 %dMB 까지만 가능합니다.</string>
+    <string name="str_on">ON</string>
+    <string name="str_off">OFF</string>
+    <string name="str_usage_guide">이용 안내</string>
+    <string name="str_confirm">확인</string>
+    <string name="str_stop_see">그만 보기</string>
+    <string name="str_usage_guide_1">앱(APP) 사용으로 인한 피해 및 분쟁등 모든 책임은 사용자에게 있습니다. 아래 앱의 기능 및 특징을 확인하시고 앱 사용시 주의하여 주시기 바랍니다.\n\n1. 통화 후 자동으로 발신자에게 미리 지정한 형식의 문자를 전송할 수 있습니다.\n2. 문자 전송시 스마트폰의 문자를 이용하므로 사용중인 요금제에 따라서 요금이 청구될 수 있습니다.\n3. 광고성 문자 전송시 스팸 방지를 위한 정보통신망법에 따라 재제를 받을 수 있습니다. (정보통신망법에서 지정한 양식을 준수하시기 바랍니다.)</string>
 </resources>
