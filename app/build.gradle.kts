@@ -76,7 +76,7 @@ dependencies {
     implementation("com.squareup.okhttp3:logging-interceptor:$okhttp_version")
     implementation("com.squareup.okhttp3:okhttp-urlconnection:$okhttp_version")
 
-    implementation("com.klinkerapps:android-smsmms:5.2.6")
+    //implementation("com.klinkerapps:android-smsmms:5.2.6")
     implementation ("commons-io:commons-io:2.5")
     // Coroutines
     implementation ("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.0")

@@ -39,9 +39,6 @@ import com.jdm.alija.presentation.ui.photoselect.PhotoSelectActivity
 import com.jdm.alija.presentation.ui.photoselect.PhotoSelectActivity.Companion.BUNDLE_KEY_PHOTO
 import com.jdm.alija.presentation.util.FileUtil
 import com.jdm.alija.presentation.util.SmsUtil
-import com.klinker.android.send_message.Message
-import com.klinker.android.send_message.Settings
-import com.klinker.android.send_message.Transaction
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -53,7 +50,6 @@ class ContactDetailActivity : BaseActivity<ActivityContactDetailBinding>() {
         get() = R.layout.activity_contact_detail
     private val contactDetailViewModel: ContactDetailViewModel by viewModels()
     var uri: Uri? = null
-    lateinit var sendTransaction: Transaction
     @Inject
     lateinit var smsUtil: SmsUtil
     private val albumPicker =
@@ -77,9 +73,6 @@ class ContactDetailActivity : BaseActivity<ActivityContactDetailBinding>() {
     val storageList = mutableListOf<String>()
     var requirePermission = arrayOf<String>()
     override fun initView() {
-        val sendSettings = Settings()
-        sendSettings.useSystemSending = true
-        sendTransaction = Transaction(this, sendSettings)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
             storageList.add(Manifest.permission.READ_MEDIA_VISUAL_USER_SELECTED)
         }
@@ -130,6 +123,7 @@ class ContactDetailActivity : BaseActivity<ActivityContactDetailBinding>() {
                         binding.clContactDetailCamera.visibility = View.VISIBLE
                     }
                     binding.taContactDetail.setText(state.text)
+
                 }
             }
         }
@@ -205,6 +199,25 @@ class ContactDetailActivity : BaseActivity<ActivityContactDetailBinding>() {
 
 
 
+        }
+        binding.llSmsRadio.setOnClickListener {
+            setRadioUI(false)
+        }
+        binding.llKakaoRadio.setOnClickListener {
+            setRadioUI(true)
+        }
+    }
+    private fun setRadioUI(isKakao: Boolean) {
+        binding.ivKakaoRadio.isSelected = false
+        binding.tvKakaoRadio.isSelected = false
+        binding.ivSmsRadio.isSelected = false
+        binding.tvSmsRadio.isSelected = false
+        if (isKakao) {
+            binding.ivKakaoRadio.isSelected = true
+            binding.tvKakaoRadio.isSelected = true
+        } else {
+            binding.ivSmsRadio.isSelected = true
+            binding.tvSmsRadio.isSelected = true
         }
     }
 

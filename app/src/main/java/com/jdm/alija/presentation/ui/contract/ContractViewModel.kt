@@ -66,6 +66,7 @@ class ContractViewModel @Inject constructor(
                         contact.isSelected = true
                         contact.text = sms.text
                         contact.imgUri = sms.imgUri
+                        contact.isKakao = sms.isKakao
                         break
                     }
                 }
@@ -84,13 +85,13 @@ class ContractViewModel @Inject constructor(
     fun insertSms(item: Contact, keyword: String) {
         if (item.isSelected) {
             viewModelScope.launch {
-                smsRepository.deleteSms(SmsEntity(item.id, "", "", ""))
+                smsRepository.deleteSms(SmsEntity(item.id, "", "", "", false))
                 getContractList(keyword)
             }
         } else {
             viewModelScope.launch {
                 val number = if (item.numbers.isEmpty()) "" else item.numbers[0]
-                smsRepository.insert(item.id, "", "", number)
+                smsRepository.insert(item.id, "", "", number, false)
                 getContractList(keyword)
             }
         }

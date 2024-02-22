@@ -14,7 +14,8 @@ class ContactDetailContract {
         val mobile: String = "",
         val imgUri: Uri? = null,
         val text: String = "",
-        val isSelected : Boolean = false
+        val isSelected : Boolean = false,
+        val isKakao: Boolean = false
     ) : ViewState
 
     sealed class ContactDetailSideEffect : ViewSideEffect {

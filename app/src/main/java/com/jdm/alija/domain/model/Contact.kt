@@ -10,6 +10,7 @@ data class Contact(
     var isSelected: Boolean = false,
     var imgUri: String = "",
     var text: String = "",
+    var isKakao: Boolean,
     var numbers : MutableList<String> = mutableListOf<String>()
 ) : Parcelable{
 }

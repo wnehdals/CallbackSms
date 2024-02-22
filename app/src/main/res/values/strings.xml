@@ -36,6 +36,9 @@
     <string name="str_inquiry_file_size_error">파일 첨부는 %dMB 까지만 가능합니다.</string>
     <string name="str_on">ON</string>
     <string name="str_off">OFF</string>
+    <string name="str_send_type">문자 전송 방법</string>
+    <string name="str_send_sms">문자로 보내기</string>
+    <string name="str_send_kakao">카카오톡으로 보내기</string>
     <string name="str_usage_guide">이용 안내</string>
     <string name="str_confirm">확인</string>
     <string name="str_stop_see">그만 보기</string>

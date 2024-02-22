@@ -35,7 +35,7 @@ class ContactDetailViewModel @Inject constructor(
             val phone = if (item.numbers.isEmpty()) "" else item.numbers[0]
             Log.e("viewmodel", item.toString())
             val imgUri = if (item.imgUri.isEmpty() || item.imgUri == "null") null else Uri.parse(item.imgUri)
-            updateState { copy(id = item.id, name = item.name, mobile = phone, imgUri = imgUri, text = item.text, isSelected = item.isSelected) }
+            updateState { copy(id = item.id, name = item.name, mobile = phone, imgUri = imgUri, text = item.text, isSelected = item.isSelected, isKakao = item.isKakao) }
         }
     }
     fun saveContact() {
@@ -44,7 +44,8 @@ class ContactDetailViewModel @Inject constructor(
                 id = currentState.id,
                 mobile = currentState.mobile,
                 text = currentState.text,
-                imgUri = currentState.imgUri.toString()
+                imgUri = currentState.imgUri.toString(),
+                isKakao = currentState.isKakao
             )
             Log.e(TAG, smsEntity.toString())
             val result = smsRepository.update(smsEntity)

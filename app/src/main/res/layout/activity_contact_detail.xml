@@ -70,6 +70,54 @@
                         android:layout_weight="1"
                         tools:text="주주주"/>
                 </LinearLayout>
+                <androidx.appcompat.widget.AppCompatTextView
+                    style="@style/Label.M"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/str_send_type"
+                    android:layout_marginHorizontal="20dp"
+                    android:layout_marginTop="8dp"/>
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginHorizontal="20dp">
+                    <LinearLayout
+                        android:id="@+id/ll_sms_radio"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:orientation="horizontal">
+                        <androidx.appcompat.widget.AppCompatImageView
+                            android:id="@+id/iv_sms_radio"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:src="@drawable/sel_ic_radio"/>
+                        <androidx.appcompat.widget.AppCompatTextView
+                            android:id="@+id/tv_sms_radio"
+                            style="@style/Label.M"
+                            android:text="@string/str_send_sms"
+                            android:textColor="@color/c_check"/>
+                    </LinearLayout>
+                    <LinearLayout
+                        android:id="@+id/ll_kakao_radio"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:orientation="horizontal">
+                        <androidx.appcompat.widget.AppCompatImageView
+                            android:id="@+id/iv_kakao_radio"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:src="@drawable/sel_ic_radio"/>
+                        <androidx.appcompat.widget.AppCompatTextView
+                            android:id="@+id/tv_kakao_radio"
+                            style="@style/Label.M"
+                            android:text="@string/str_send_sms"
+                            android:textColor="@color/c_check"/>
+                    </LinearLayout>
+                </LinearLayout>
 
                 <androidx.appcompat.widget.AppCompatTextView
                     style="@style/Label.M"
@@ -90,6 +138,7 @@
                     style="@style/Label.M"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:visibility="gone"
                     android:text="@string/str_attach_photo"
                     android:layout_marginHorizontal="20dp"
                     android:layout_marginTop="16dp"/>
@@ -108,6 +157,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="160dp"
                     android:layout_marginTop="8dp"
+                    android:visibility="gone"
                     android:layout_marginHorizontal="20dp"
                     android:background="@drawable/bg_r8_f_gray100">
                     <androidx.appcompat.widget.AppCompatImageView

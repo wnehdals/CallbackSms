@@ -10,5 +10,6 @@ data class SmsEntity(
     val imgUri: String,
     val text: String,
     val mobile: String,
+    val isKakao: Boolean
 ) {
 }

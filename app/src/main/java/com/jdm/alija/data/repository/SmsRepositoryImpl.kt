@@ -10,8 +10,8 @@ import javax.inject.Inject
 class SmsRepositoryImpl @Inject constructor(
     private val smsDao: SmsDao
 ) : SmsRepository {
-    override suspend fun insert(id: String, imgUri: String, text: String, mobile: String, ): Long {
-        return smsDao.insert(SmsEntity(id, imgUri, text, mobile))
+    override suspend fun insert(id: String, imgUri: String, text: String, mobile: String, isKakao: Boolean ): Long {
+        return smsDao.insert(SmsEntity(id, imgUri, text, mobile, isKakao))
     }
 
     override suspend fun getAllSms(): List<SmsEntity> {
