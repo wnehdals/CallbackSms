@@ -84,9 +84,7 @@ abstract class BaseFragment<T : ViewDataBinding> : Fragment() {
         super.onDetach()
     }
     protected fun exitApp() {
-        requireActivity().moveTaskToBack(true)
         requireActivity().finish()
-        System.exit(0)
     }
 
 }

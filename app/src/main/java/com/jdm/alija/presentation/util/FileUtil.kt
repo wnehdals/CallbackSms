@@ -5,11 +5,6 @@ import android.graphics.Bitmap
 import android.os.Environment
 import android.text.TextUtils
 import android.util.Log
-import com.google.android.mms.pdu_alt.EncodedStringValue
-import com.google.android.mms.pdu_alt.PduBody
-import com.google.android.mms.pdu_alt.PduComposer
-import com.google.android.mms.pdu_alt.PduPart
-import com.google.android.mms.pdu_alt.SendReq
 import org.apache.commons.io.FileUtils
 import java.io.File
 import java.io.FileNotFoundException
@@ -49,20 +44,9 @@ object FileUtil {
         val filePath : String = "${Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES)}/"
         return filePath
     }
-    private fun buildPdu(context: Context, file: File): ByteArray? {
-        val sendRequestPdu = SendReq()
-        sendRequestPdu.addTo(EncodedStringValue("010-5139-1216"))
-        val pduBody = PduBody()
-        val sampleImageData: ByteArray = FileUtils.readFileToByteArray(file)
-        val sampleImagePduPart = PduPart()
-        sampleImagePduPart.data = sampleImageData
-        sampleImagePduPart.contentType = "image/png".toByteArray()
-        //sampleImagePduPart.filename = file.name.getBytes()
-        pduBody.addPart(sampleImagePduPart)
-        sendRequestPdu.body = pduBody
-        val composer = PduComposer(context, sendRequestPdu)
-        val pduData = composer.make()
-        return pduData
+    fun getFile(path: String): File? {
+        val file = File(path)
+        if (file.exists()) return file else return null
     }
 
 

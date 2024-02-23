@@ -12,10 +12,11 @@ class ContactDetailContract {
         val id: String = "",
         val name: String = "",
         val mobile: String = "",
-        val imgUri: Uri? = null,
+        val imgPath: String? = null,
         val text: String = "",
         val isSelected : Boolean = false,
-        val isKakao: Boolean = false
+        val isKakao: Boolean = false,
+        val isHidden: Boolean = false
     ) : ViewState
 
     sealed class ContactDetailSideEffect : ViewSideEffect {
@@ -25,6 +26,8 @@ class ContactDetailContract {
 
     sealed class ContactDetailEvent : ViewEvent {
         data class OnClickComplete(val text: String) : ContactDetailEvent()
-        data class OnClickAttachImg(val uri: Photo?, val text: String) : ContactDetailEvent()
+        data class OnClickAttachImg(val path: String, val text: String) : ContactDetailEvent()
+        data class OnClickRadioGroup(val isKakao: Boolean) : ContactDetailEvent()
+        data class OnClickHidden(val value: Boolean) : ContactDetailEvent()
     }
 }

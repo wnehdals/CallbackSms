@@ -109,6 +109,7 @@ class PermissionActivity : BaseActivity<ActivityPermissionBinding>() {
                         if (isWhiteList()) {
                             val intent = Intent(this@PermissionActivity, MainActivity::class.java)
                             goToActivity(intent)
+                            finish()
                         } else {
                             CommonDialog(
                                 title = "배터리 사용량 최적화 중지",

@@ -5,6 +5,8 @@ import android.content.Context
 import android.content.res.Resources
 import android.telecom.Call
 import android.util.TypedValue
+import android.view.View
+import android.view.inputmethod.InputMethodManager
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import com.jdm.alija.R
@@ -71,4 +73,13 @@ fun Int.toCallStatus() = when (this) {
     Call.STATE_DIALING -> CallType.Status.DIALING
     Call.STATE_DISCONNECTED -> CallType.Status.DISCONNECTED
     else -> CallType.Status.UNKNOWN
+}
+@JvmSynthetic
+internal fun Context.controlSoftKeyboard(view: View, isShow: Boolean) {
+    val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+    if (isShow) {
+        imm.showSoftInput(view, 0)
+    } else {
+        imm.hideSoftInputFromWindow(view.windowToken, 0)
+    }
 }

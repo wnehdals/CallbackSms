@@ -41,6 +41,7 @@ import com.jdm.alija.presentation.util.FileUtil
 import com.jdm.alija.presentation.util.SmsUtil
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
+import java.io.File
 import javax.inject.Inject
 
 
@@ -70,6 +71,36 @@ class ContactDetailActivity : BaseActivity<ActivityContactDetailBinding>() {
 
             }
         }
+    private val glideListener: RequestListener<Bitmap> = object : RequestListener<Bitmap> { //이미지 로드 완료
+        override fun onLoadFailed(
+            e: GlideException?,
+            model: Any?,
+            target: Target<Bitmap>,
+            isFirstResource: Boolean
+        ): Boolean {
+            return false
+        }
+
+        override fun onResourceReady(
+            resource: Bitmap,
+            model: Any,
+            target: Target<Bitmap>?,
+            dataSource: DataSource,
+            isFirstResource: Boolean
+        ): Boolean {
+            val bitmap = resource
+            val fileName = "alija" + System.currentTimeMillis() + ".jpg"
+            val path = FileUtil.getExternalFilePath(this@ContactDetailActivity)
+            val file = FileUtil.saveImageIntoFileFromUri(this@ContactDetailActivity, bitmap, fileName, FileUtil.getExternalFilePath(this@ContactDetailActivity) )
+            contactDetailViewModel.setEvent(
+                ContactDetailContract.ContactDetailEvent.OnClickAttachImg(
+                    "$path/$fileName",
+                    binding.taContactDetail.getText()
+                )
+            )
+            return false
+        }
+    }
     val storageList = mutableListOf<String>()
     var requirePermission = arrayOf<String>()
     override fun initView() {
@@ -110,19 +141,25 @@ class ContactDetailActivity : BaseActivity<ActivityContactDetailBinding>() {
                 contactDetailViewModel.viewState.collect { state ->
                     binding.tvContactDetailName.text = state.name
                     binding.ivContactDetailAvatar.isSelected = state.isSelected
-                    if (state.imgUri != null) {
+                    if (state.imgPath.isNullOrEmpty() || state.imgPath == "null") {
+                        binding.clContactDetailCamera.visibility = View.VISIBLE
+                        binding.ivContactDetailAttachImg.visibility = View.GONE
+                    } else {
                         binding.clContactDetailCamera.visibility = View.GONE
                         binding.ivContactDetailAttachImg.visibility = View.VISIBLE
-                        Glide.with(this@ContactDetailActivity)
-                            .load(state.imgUri)
-                            .placeholder(R.drawable.bg_r8_f_gray100)
-                            .error(R.drawable.ic_img_fail_black)
-                            .into(binding.ivContactDetailAttachImg)
-                    } else {
-                        binding.ivContactDetailAttachImg.visibility = View.GONE
-                        binding.clContactDetailCamera.visibility = View.VISIBLE
+                        val file = FileUtil.getFile(state.imgPath)
+                        if (file != null) {
+                            Glide.with(this@ContactDetailActivity)
+                                .load(file)
+                                .placeholder(R.drawable.ic_img_fail_black)
+                                .error(R.drawable.ic_img_fail_black)
+                                .into(binding.ivContactDetailAttachImg)
+                        }
                     }
+
                     binding.taContactDetail.setText(state.text)
+                    setRadioUI(state.isKakao, state)
+                    binding.lsContactDetail.isChecked = state.isHidden
 
                 }
             }
@@ -168,46 +205,45 @@ class ContactDetailActivity : BaseActivity<ActivityContactDetailBinding>() {
                 imgPermissionLauncher.launch(requirePermission)
             }
         }
-        binding.tvContactDetailComplete.setOnClickListener {
-
-
-            setImage(uri) {
-                val fileName = "alija" + System.currentTimeMillis() + ".jpg"
-                val file = FileUtil.saveImageIntoFileFromUri(this, it, fileName, FileUtil.getExternalFilePath(this) )
-                val mediaType = MimeTypeMap.getSingleton().getMimeTypeFromExtension(file.extension)
-                val photoURL = FileProvider.getUriForFile(this, "com.jdm.alija.fileProvider", file)
-                smsUtil.sendImgMessage("010-5139-1216",it)
-                    return@setImage
-                Log.e("fileUri", "${photoURL.toString()}")
-                val smsUri = Uri.parse("smsto:" + "01051391216")
-                val intent = Intent(Intent.ACTION_SENDTO)
-                //intent.putExtra("address","01000000000")
-                intent.putExtra(Intent.EXTRA_STREAM, photoURL)
-                intent.setType("image/*")
-                //intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                intent.setData(smsUri)
-
-                intent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-
-                intent.putExtra("sms_body", "테스트 메시지")
-                startActivity(Intent.createChooser(intent, "share"))
-
-                //intent.setDataAndType(smsUri, "image/*" )
-
+        binding.ivContactDetailAttachImg.setOnClickListener {
+            if (isPermissionAllow(requirePermission)) {
+                showAlbum()
+            } else {
+                imgPermissionLauncher.launch(requirePermission)
             }
-            //contactDetailViewModel.setEvent(ContactDetailContract.ContactDetailEvent.OnClickComplete(binding.taContactDetail.getText()))
+        }
+        binding.llKakaoRadio.setOnClickListener {
+            contactDetailViewModel.setEvent(ContactDetailContract.ContactDetailEvent.OnClickRadioGroup(true))
+        }
+        binding.llSmsRadio.setOnClickListener {
+            contactDetailViewModel.setEvent(ContactDetailContract.ContactDetailEvent.OnClickRadioGroup(false))
+        }
+        binding.tvContactDetailComplete.setOnClickListener {
+            /*
+            val intent = Intent(Intent.ACTION_SEND)
+            intent.setType("text/plain")
+            intent.putExtra(Intent.EXTRA_TEXT, "mmm")
+            intent.setPackage("com.kakao.talk")
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            startActivity(intent)
+
+             */
+            contactDetailViewModel.setEvent(ContactDetailContract.ContactDetailEvent.OnClickComplete(binding.taContactDetail.getText()))
 
 
 
         }
         binding.llSmsRadio.setOnClickListener {
-            setRadioUI(false)
+            contactDetailViewModel.setEvent(ContactDetailContract.ContactDetailEvent.OnClickRadioGroup(false))
         }
         binding.llKakaoRadio.setOnClickListener {
-            setRadioUI(true)
+            contactDetailViewModel.setEvent(ContactDetailContract.ContactDetailEvent.OnClickRadioGroup(true))
+        }
+        binding.lsContactDetail.setOnClickListener {
+            contactDetailViewModel.setEvent(ContactDetailContract.ContactDetailEvent.OnClickHidden(binding.lsContactDetail.isChecked))
         }
     }
-    private fun setRadioUI(isKakao: Boolean) {
+    private fun setRadioUI(isKakao: Boolean, state: ContactDetailContract.ContactDetailViewState) {
         binding.ivKakaoRadio.isSelected = false
         binding.tvKakaoRadio.isSelected = false
         binding.ivSmsRadio.isSelected = false
@@ -215,48 +251,16 @@ class ContactDetailActivity : BaseActivity<ActivityContactDetailBinding>() {
         if (isKakao) {
             binding.ivKakaoRadio.isSelected = true
             binding.tvKakaoRadio.isSelected = true
+            binding.llContactDetailHidden.visibility = View.GONE
         } else {
             binding.ivSmsRadio.isSelected = true
             binding.tvSmsRadio.isSelected = true
+            binding.clContactDetailCamera.visibility = View.GONE
+            binding.ivContactDetailAttachImg.visibility = View.GONE
+            binding.llContactDetailHidden.visibility = View.VISIBLE
         }
     }
 
-    private fun setImage(uri: Uri?, bitmapCallback: (Bitmap) -> Unit) {
-        if (uri == null)
-            return
-        Glide.with(this)
-            .load(uri) //uri로 이미지 로드
-            .apply(RequestOptions.skipMemoryCacheOf(true)) //메모리 캐시 사용 no
-            .apply(RequestOptions.diskCacheStrategyOf(DiskCacheStrategy.NONE)) //디스크 캐시 사용 no
-            .listener(object : RequestListener<Drawable> { //이미지 로드 완료 시 리스너
-                override fun onLoadFailed(
-                    e: GlideException?,
-                    model: Any?,
-                    target: Target<Drawable>,
-                    isFirstResource: Boolean
-                ): Boolean {
-                    return false
-                }
-                override fun onResourceReady(
-                    resource: Drawable,
-                    model: Any,
-                    target: Target<Drawable>?,
-                    dataSource: DataSource,
-                    isFirstResource: Boolean
-                ): Boolean {
-                    if (resource is BitmapDrawable) {
-                        val bitmap = resource.bitmap
-                        bitmapCallback(bitmap)
-                        bitmap.byteCount		// 리사이징된 이미지 바이트
-                        bitmap.width	    	// 이미지 넓이
-                        bitmap.height			// 이미지 높이
-                    }
-                    return false
-                }
-            })
-            .into(binding.ivContactDetailAttachImg)
-
-    }
     fun getOriginalImageSize(uri: Uri, context: Context): Pair<Int, Int> {
         val options = BitmapFactory.Options()
         options.inJustDecodeBounds = true
@@ -282,20 +286,28 @@ class ContactDetailActivity : BaseActivity<ActivityContactDetailBinding>() {
 
     override fun initData() {
     }
+    private fun loadBitmapUri(uri: Uri) {
+        Glide.with(this)
+            .asBitmap()
+            .load(uri)
+            .listener(glideListener)
+            .preload()
+    }
 
     fun onFileSelected(result: ActivityResult) {
         if (result.resultCode != Activity.RESULT_OK) {
             return
         }
         val photo: Photo? = result.data?.getParcelableExtra<Photo>(BUNDLE_KEY_PHOTO)
-        contactDetailViewModel.setEvent(
-            ContactDetailContract.ContactDetailEvent.OnClickAttachImg(
-                photo,
-                binding.taContactDetail.getText()
-            )
-        )
+        if (photo != null) {
+            if (photo.uri != null) {
+                loadBitmapUri(photo.uri)
+            }
+        }
+
 
     }
+
 
     companion object {
         val CONTACT_BUNDLE_KEY = "contact"
@@ -308,3 +320,32 @@ class ContactDetailActivity : BaseActivity<ActivityContactDetailBinding>() {
         val TAG = this.javaClass.simpleName
     }
 }
+/*
+    private fun sete() {
+        setImage(uri) {
+            val fileName = "alija" + System.currentTimeMillis() + ".jpg"
+            val file = FileUtil.saveImageIntoFileFromUri(this, it, fileName, FileUtil.getExternalFilePath(this) )
+            val mediaType = MimeTypeMap.getSingleton().getMimeTypeFromExtension(file.extension)
+            val photoURL = FileProvider.getUriForFile(this, "com.jdm.alija.fileProvider", file)
+            smsUtil.sendImgMessage("010-5139-1216",it)
+            return@setImage
+            Log.e("fileUri", "${photoURL.toString()}")
+            val smsUri = Uri.parse("smsto:" + "01051391216")
+            val intent = Intent(Intent.ACTION_SENDTO)
+            //intent.putExtra("address","01000000000")
+            intent.putExtra(Intent.EXTRA_STREAM, photoURL)
+            intent.setType("image/*")
+            //intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            intent.setData(smsUri)
+
+            intent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+
+            intent.putExtra("sms_body", "테스트 메시지")
+            startActivity(Intent.createChooser(intent, "share"))
+
+            //intent.setDataAndType(smsUri, "image/*" )
+
+        }
+    }
+
+     */

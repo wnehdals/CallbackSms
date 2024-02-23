@@ -63,7 +63,6 @@
                 android:name="android.app.PROPERTY_SPECIAL_USE_FGS_SUBTYPE"
                 android:value="foo" />
         </service>
-        <service android:name="com.android.mms.transaction.TransactionService"/>
         <activity
             android:name=".CallActivity"
             android:exported="false" />

@@ -10,6 +10,7 @@ data class SmsEntity(
     val imgUri: String,
     val text: String,
     val mobile: String,
-    val isKakao: Boolean
+    val isKakao: Boolean,
+    val isHidden: Boolean
 ) {
 }

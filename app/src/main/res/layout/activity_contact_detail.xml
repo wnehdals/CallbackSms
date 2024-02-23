@@ -114,9 +114,38 @@
                         <androidx.appcompat.widget.AppCompatTextView
                             android:id="@+id/tv_kakao_radio"
                             style="@style/Label.M"
-                            android:text="@string/str_send_sms"
+                            android:text="@string/str_send_kakao"
                             android:textColor="@color/c_check"/>
                     </LinearLayout>
+                </LinearLayout>
+                <LinearLayout
+                    android:id="@+id/ll_contact_detail_hidden"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginHorizontal="20dp"
+                    android:orientation="horizontal">
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:orientation="vertical">
+                    <androidx.appcompat.widget.AppCompatTextView
+                        style="@style/Label.M"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/str_before_check_sms"/>
+                        <androidx.appcompat.widget.AppCompatTextView
+                            style="@style/Paragraph.M"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="@string/str_before_check_sms_guide"/>
+                    </LinearLayout>
+                    <com.jdm.alija.view.LabelSwitch
+                        android:id="@+id/ls_contact_detail"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"/>
                 </LinearLayout>
 
                 <androidx.appcompat.widget.AppCompatTextView

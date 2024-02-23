@@ -21,6 +21,8 @@ import com.jdm.alija.presentation.ui.main.MainActivity
 import com.jdm.alija.presentation.util.Const.ACTION_START_LOCATION_SERVICE
 import com.jdm.alija.presentation.util.Const.ACTION_STOP_LOCATION_SERVICE
 import com.jdm.alija.presentation.util.Const.LOCATION_SERVICE_ID
+import com.jdm.alija.presentation.util.FileUtil
+import com.jdm.alija.presentation.util.SmsUtil
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -37,6 +39,8 @@ class SmsService : Service() {
     private val scope = CoroutineScope(Dispatchers.IO + job)
     @Inject
     lateinit var smsRepository: SmsRepository
+    @Inject
+    lateinit var smsUtil: SmsUtil
     override fun onBind(intent: Intent): IBinder {
         TODO("Return the communication channel to the service.")
     }
@@ -53,39 +57,61 @@ class SmsService : Service() {
                 //val pendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_IMMUTABLE)
                 //pendingIntent.send()
                 var mobile = intent.getStringExtra("mobile")?: ""
-                mobile = mobile.replace("-","")
+                mobile = mobile.replace("-","").trim()
                 scope.launch {
                     var list = smsRepository.getAllSms()
-                    list = list.filter { (it.mobile.replace("-","")) == mobile }
+                    list = list.filter { (it.mobile.replace("-","").trim()) == mobile }
                     Log.e("service", list.toString())
                     for(i in list) {
-                        val smsUri = Uri.parse("smsto:" + i.mobile)
-                        val intent = Intent(Intent.ACTION_SENDTO)
-                        if (i.imgUri.isEmpty() || i.imgUri == "null") {
+                        if (i.isKakao) {
+                            val intent = Intent(Intent.ACTION_SEND)
+                            intent.setPackage("com.kakao.talk")
+                            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                            intent.putExtra(Intent.EXTRA_TEXT, i.text)
+                            intent.setType("text/plain")
+                            if (i.imgUri.isNullOrEmpty() || i.imgUri == "null") {
 
+                            } else {
+                                val file = FileUtil.getFile(i.imgUri)
+                                if (file != null) {
+                                    intent.setType("image/*")
+                                    val photoURL = FileProvider.getUriForFile(this@SmsService, "com.jdm.alija.fileProvider", file)
+                                    intent.putExtra(Intent.EXTRA_STREAM, photoURL)
+                                }
+                            }
+                            this@SmsService.startActivity(intent)
                         } else {
-                            intent.setType("image/*")
-                            val file = File(i.imgUri.toString())
-                            val photoUri = FileProvider.getUriForFile(
-                                applicationContext,
-                                BuildConfig.APPLICATION_ID + ".fileprovider",
-                                file
-                            )
-                            intent.putExtra(Intent.EXTRA_STREAM, photoUri)
+                            if (i.isHidden) {
+                                smsUtil.sendTextMessage(i.mobile.replace("-","").trim(), i.text)
+                            } else {
+                                val smsUri = Uri.parse("smsto:" + i.mobile)
+                                val intent = Intent(Intent.ACTION_SENDTO)
+                                if (i.imgUri.isEmpty() || i.imgUri == "null") {
 
-                            Log.e("service", "${i.imgUri}")
+                                } else {
+                                    intent.setType("image/*")
+                                    val file = File(i.imgUri.toString())
+                                    val photoUri = FileProvider.getUriForFile(
+                                        applicationContext,
+                                        BuildConfig.APPLICATION_ID + ".fileprovider",
+                                        file
+                                    )
+                                    intent.putExtra(Intent.EXTRA_STREAM, photoUri)
+
+                                    Log.e("service", "${i.imgUri}")
+                                }
+                                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                                intent.setData(smsUri)
+                                intent.putExtra("sms_body", "${i.text}")
+                                this@SmsService.startActivity(intent)
+                            }
                         }
-                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                        intent.setData(smsUri)
-                        intent.putExtra("sms_body", "${i.text}")
-                        this@SmsService.startActivity(intent)
+
                     }
                 }
-
-
             }
         }
-        return START_STICKY
+        return START_REDELIVER_INTENT
         //return super.onStartCommand(intent, flags, startId)
     }
     fun getNotification(title: String, body: String, channelId: String, pushNotiId: Int, intent: Intent, setOnGoing: Boolean = false): Notification {

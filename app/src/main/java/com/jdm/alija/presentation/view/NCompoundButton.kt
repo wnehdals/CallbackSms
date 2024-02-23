@@ -18,8 +18,6 @@ abstract class NCompoundButton @JvmOverloads constructor(
 ) : LinearLayout(context, attributeSet, defStyleAttr) {
     private var imageView: AppCompatImageView = AppCompatImageView(context, attributeSet, defStyleAttr)
 
-    private var onCheckedChangeListener =
-        CompoundButton.OnCheckedChangeListener { buttonView, isChecked -> }
 
     var isChecked = false
         set(value) {
@@ -49,15 +47,5 @@ abstract class NCompoundButton @JvmOverloads constructor(
             addView(imageView)
             recycle()
         }
-
-        this.setOnClickListener {
-            isChecked = !isChecked
-            onCheckedChangeListener.onCheckedChanged(null, isChecked)
-        }
     }
-    fun setOnCheckedChangeListener(listener: CompoundButton.OnCheckedChangeListener) {
-        onCheckedChangeListener = listener
-    }
-
-
 }

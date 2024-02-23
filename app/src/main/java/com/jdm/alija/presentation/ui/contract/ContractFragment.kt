@@ -1,6 +1,7 @@
 package com.jdm.alija.presentation.ui.contract
 
 import android.content.Intent
+import android.util.Log
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContract
@@ -15,6 +16,7 @@ import com.jdm.alija.domain.model.Contact
 import com.jdm.alija.presentation.ui.contractdetail.ContactDetailActivity
 import com.jdm.alija.presentation.ui.main.MainContract
 import com.jdm.alija.presentation.ui.main.MainViewModel
+import com.jdm.alija.presentation.util.controlSoftKeyboard
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -36,6 +38,8 @@ class ContractFragment : BaseFragment<FragmentContractBinding>() {
         }
         detailResultLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
             binding.etContact.setText("")
+            hideKeyboard()
+            binding.etContact.clearFocus()
             initData()
         }
     }
@@ -60,9 +64,11 @@ class ContractFragment : BaseFragment<FragmentContractBinding>() {
         contractViewModel.getContractList()
     }
     private fun onClickContact(item: Contact) {
+        Log.e(TAG, item.toString())
         if (item.isSelected) {
             val intent = ContactDetailActivity.getContactDetailIntent(requireContext(), item)
             detailResultLauncher.launch(intent)
+
         }
 
     }
@@ -70,6 +76,9 @@ class ContractFragment : BaseFragment<FragmentContractBinding>() {
         contractViewModel.insertSms(item, binding.etContact.text.toString())
     }
 
+    fun hideKeyboard() {
+        requireContext().controlSoftKeyboard(binding.etContact, false)
+    }
     companion object {
         @JvmStatic
         fun newInstance() = ContractFragment()
