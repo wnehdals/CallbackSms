@@ -6,6 +6,7 @@ import android.app.NotificationManager
 import android.app.PendingIntent
 import android.app.Service
 import android.content.Intent
+import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.Build
 import android.os.IBinder
@@ -14,15 +15,17 @@ import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
-import com.jdm.alija.BuildConfig
 import com.jdm.alija.R
-import com.jdm.alija.domain.repository.SmsRepository
+import com.jdm.alija.domain.repository.ContactRepository
 import com.jdm.alija.presentation.ui.main.MainActivity
 import com.jdm.alija.presentation.util.Const.ACTION_START_LOCATION_SERVICE
 import com.jdm.alija.presentation.util.Const.ACTION_STOP_LOCATION_SERVICE
 import com.jdm.alija.presentation.util.Const.LOCATION_SERVICE_ID
 import com.jdm.alija.presentation.util.FileUtil
 import com.jdm.alija.presentation.util.SmsUtil
+import com.jdm.alija.presentation.util.Transaction
+import com.klinker.android.send_message.Message
+import com.klinker.android.send_message.Settings
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -38,7 +41,7 @@ class SmsService : Service() {
     private val job = SupervisorJob()
     private val scope = CoroutineScope(Dispatchers.IO + job)
     @Inject
-    lateinit var smsRepository: SmsRepository
+    lateinit var smsRepository: ContactRepository
     @Inject
     lateinit var smsUtil: SmsUtil
     override fun onBind(intent: Intent): IBinder {
@@ -59,7 +62,8 @@ class SmsService : Service() {
                 var mobile = intent.getStringExtra("mobile")?: ""
                 mobile = mobile.replace("-","").trim()
                 scope.launch {
-                    var list = smsRepository.getAllSms()
+
+                    var list = smsRepository.getAllContact()
                     list = list.filter { (it.mobile.replace("-","").trim()) == mobile }
                     Log.e("service", list.toString())
                     for(i in list) {
@@ -81,8 +85,21 @@ class SmsService : Service() {
                             }
                             this@SmsService.startActivity(intent)
                         } else {
-                            if (i.isHidden) {
-                                smsUtil.sendTextMessage(i.mobile.replace("-","").trim(), i.text)
+                            if (i.isCheck) {
+                                //smsUtil.sendTextMessage(i.mobile.replace("-","").trim(), i.text)
+                                val text = i.text
+                                val settings = Settings()
+                                settings.useSystemSending = true
+                                val transaction: Transaction = Transaction(this@SmsService, settings)
+                                val message = Message(text, i.mobile.replace("-","").trim(),"")
+                                if (i.imgUri.isEmpty() || i.imgUri == "null") {
+
+                                } else {
+                                    val bitmap = BitmapFactory.decodeFile(i.imgUri)
+                                    message.addImage(bitmap)
+                                }
+                                val id: Long = android.os.Process.getThreadPriority(android.os.Process.myTid()).toLong()
+                                transaction.sendNewMessage(message, id)
                             } else {
                                 val smsUri = Uri.parse("smsto:" + i.mobile)
                                 val intent = Intent(Intent.ACTION_SENDTO)
@@ -93,7 +110,7 @@ class SmsService : Service() {
                                     val file = File(i.imgUri.toString())
                                     val photoUri = FileProvider.getUriForFile(
                                         applicationContext,
-                                        BuildConfig.APPLICATION_ID + ".fileprovider",
+                                        "com.jdm.alija.fileProvider",
                                         file
                                     )
                                     intent.putExtra(Intent.EXTRA_STREAM, photoUri)

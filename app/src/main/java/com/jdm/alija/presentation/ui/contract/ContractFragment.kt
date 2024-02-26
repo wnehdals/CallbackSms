@@ -9,6 +9,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
+import androidx.navigation.fragment.findNavController
 import com.jdm.alija.R
 import com.jdm.alija.base.BaseFragment
 import com.jdm.alija.databinding.FragmentContractBinding
@@ -23,15 +24,9 @@ import dagger.hilt.android.AndroidEntryPoint
 class ContractFragment : BaseFragment<FragmentContractBinding>() {
     override val layoutResId: Int
         get() = R.layout.fragment_contract
-    private val mainViewModel : MainViewModel by activityViewModels()
     private val contractViewModel : ContractViewModel by viewModels()
-    override var onBackPressedCallback: OnBackPressedCallback? = object : OnBackPressedCallback(true) {
-        override fun handleOnBackPressed() {
-            mainViewModel.setEvent(MainContract.MainEvent.OnClickHomeButton)
-        }
-    }
     private lateinit var detailResultLauncher: ActivityResultLauncher<Intent>
-    private val contactAdapter by lazy { ContractAdapter(this::onClickContact, this::onClickContactSwitch) }
+    private val contactAdapter by lazy { ContactAdapter(requireContext(), this::onClickContactSwitch) }
     override fun initView() {
         with(binding) {
             rvContact.adapter = contactAdapter
@@ -50,6 +45,18 @@ class ContractFragment : BaseFragment<FragmentContractBinding>() {
         }
         binding.etContact.addTextChangedListener {
             contractViewModel.searchKeyword(it.toString())
+        }
+        binding.ivContactBack.setOnClickListener {
+            findNavController().popBackStack()
+        }
+        binding.llContactAllSelect.setOnClickListener {
+            if (binding.ivContactAllSelect.isSelected) {
+                binding.ivContactAllSelect.isSelected = false
+                contractViewModel.allCheck(false)
+            } else {
+                binding.ivContactAllSelect.isSelected = true
+                contractViewModel.allCheck(true)
+            }
         }
     }
 
@@ -73,7 +80,7 @@ class ContractFragment : BaseFragment<FragmentContractBinding>() {
 
     }
     private fun onClickContactSwitch(item: Contact, pos: Int) {
-        contractViewModel.insertSms(item, binding.etContact.text.toString())
+        //contractViewModel.insertSms(item, binding.etContact.text.toString())
     }
 
     fun hideKeyboard() {

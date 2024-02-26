@@ -39,6 +39,8 @@ import com.jdm.alija.presentation.ui.photoselect.PhotoSelectActivity
 import com.jdm.alija.presentation.ui.photoselect.PhotoSelectActivity.Companion.BUNDLE_KEY_PHOTO
 import com.jdm.alija.presentation.util.FileUtil
 import com.jdm.alija.presentation.util.SmsUtil
+import com.klinker.android.send_message.Settings
+import com.klinker.android.send_message.Transaction
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import java.io.File
@@ -104,6 +106,10 @@ class ContactDetailActivity : BaseActivity<ActivityContactDetailBinding>() {
     val storageList = mutableListOf<String>()
     var requirePermission = arrayOf<String>()
     override fun initView() {
+        val sendSettings = Settings()
+        val sendTransaction = Transaction(this, sendSettings)
+
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
             storageList.add(Manifest.permission.READ_MEDIA_VISUAL_USER_SELECTED)
         }
@@ -255,8 +261,8 @@ class ContactDetailActivity : BaseActivity<ActivityContactDetailBinding>() {
         } else {
             binding.ivSmsRadio.isSelected = true
             binding.tvSmsRadio.isSelected = true
-            binding.clContactDetailCamera.visibility = View.GONE
-            binding.ivContactDetailAttachImg.visibility = View.GONE
+            binding.clContactDetailCamera.visibility = View.VISIBLE
+            binding.ivContactDetailAttachImg.visibility = View.VISIBLE
             binding.llContactDetailHidden.visibility = View.VISIBLE
         }
     }

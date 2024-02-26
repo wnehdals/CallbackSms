@@ -1,12 +1,10 @@
 package com.jdm.alija.presentation.ui.contractdetail
 
-import android.net.Uri
 import android.util.Log
 import androidx.lifecycle.viewModelScope
-import com.jdm.alarmlocation.data.entity.SmsEntity
 import com.jdm.alija.base.BaseViewModel
 import com.jdm.alija.domain.model.Contact
-import com.jdm.alija.domain.repository.SmsRepository
+import com.jdm.alija.domain.repository.ContactRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -14,7 +12,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class ContactDetailViewModel @Inject constructor(
-    private val smsRepository: SmsRepository
+    private val smsRepository: ContactRepository
 ) : BaseViewModel<ContactDetailContract.ContactDetailViewState, ContactDetailContract.ContactDetailSideEffect, ContactDetailContract.ContactDetailEvent>(
     ContactDetailContract.ContactDetailViewState()
 ){
@@ -41,18 +39,19 @@ class ContactDetailViewModel @Inject constructor(
         } else {
             val phone = if (item.numbers.isEmpty()) "" else item.numbers[0]
             val imgPath: String? = if (item.imgUri.isEmpty() || item.imgUri == "null") null else item.imgUri
-            updateState { copy(id = item.id, name = item.name, mobile = phone, imgPath = imgPath, text = item.text, isSelected = item.isSelected, isKakao = item.isKakao, isHidden = item.isHidden) }
+            updateState { copy(id = item.id, name = item.name, mobile = phone, imgPath = imgPath, text = item.text, isSelected = item.isSelected, isKakao = item.isKakao, isHidden = item.isCheck) }
         }
     }
     fun saveContact() {
+        /*
         viewModelScope.launch {
-            val smsEntity = SmsEntity(
+            val smsEntity = Contact(
                 id = currentState.id,
                 mobile = currentState.mobile,
                 text = currentState.text,
                 imgUri = currentState.imgPath?: "",
                 isKakao = currentState.isKakao,
-                isHidden = currentState.isHidden
+                isCheck = currentState.isHidden
             )
             Log.e(TAG, smsEntity.toString())
             val result = smsRepository.update(smsEntity)
@@ -64,6 +63,8 @@ class ContactDetailViewModel @Inject constructor(
                 ContactDetailContract.ContactDetailSideEffect.GoToBack
             })
         }
+
+         */
     }
     companion object {
         val TAG = this.javaClass.simpleName

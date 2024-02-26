@@ -20,6 +20,8 @@
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="str_home">홈</string>
     <string name="str_contract">연락처</string>
+    <string name="str_select_contract">연락처 선택</string>
+    <string name="str_group">그룹</string>
     <string name="str_select_photo">이미지 선택</string>
     <string name="str_app_finish_guide_toast">\'뒤로\' 버튼을 한번 더 누르시면 종료됩니다.</string>
     <string name="str_phone">전화</string>
@@ -45,4 +47,11 @@
     <string name="str_usage_guide_1">앱(APP) 사용으로 인한 피해 및 분쟁등 모든 책임은 사용자에게 있습니다. 아래 앱의 기능 및 특징을 확인하시고 앱 사용시 주의하여 주시기 바랍니다.\n\n1. 통화 후 자동으로 발신자에게 미리 지정한 형식의 문자를 전송할 수 있습니다.\n2. 문자 전송시 스마트폰의 문자를 이용하므로 사용중인 요금제에 따라서 요금이 청구될 수 있습니다.\n3. 광고성 문자 전송시 스팸 방지를 위한 정보통신망법에 따라 재제를 받을 수 있습니다. (정보통신망법에서 지정한 양식을 준수하시기 바랍니다.)</string>
     <string name="str_before_check_sms">문자 전송 전 확인</string>
     <string name="str_before_check_sms_guide">문자 전송 전 내용을 선택할 수 있습니다.</string>
+    <string name="str_plus">추가</string>
+    <string name="str_incall">수신</string>
+    <string name="str_outcall">발신</string>
+    <string name="str_releasecall">부재중</string>
+    <string name="str_all_select">전체선택</string>
+    <string name="str_hint_group_name">그룹 이름을 입력해주세요.</string>
+    <string name="str_cancel">취소</string>
 </resources>

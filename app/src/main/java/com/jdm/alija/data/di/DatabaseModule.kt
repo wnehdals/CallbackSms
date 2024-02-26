@@ -3,7 +3,8 @@ package com.jdm.alija.data.di
 import android.content.Context
 import androidx.room.Room
 import com.jdm.alija.data.AppDatabase
-import com.jdm.alija.data.dao.SmsDao
+import com.jdm.alija.data.dao.ContactDao
+import com.jdm.alija.data.dao.GroupDao
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -24,7 +25,12 @@ object DatabaseModule {
     }
     @Provides
     @Singleton
-    fun provideAlarmDao(appDatabase: AppDatabase): SmsDao {
-        return appDatabase.smsDao()
+    fun provideContactDao(appDatabase: AppDatabase): ContactDao {
+        return appDatabase.contactDao()
+    }
+    @Provides
+    @Singleton
+    fun provideGroupDao(appDatabase: AppDatabase): GroupDao {
+        return appDatabase.groupDao()
     }
 }

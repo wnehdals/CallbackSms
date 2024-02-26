@@ -17,7 +17,7 @@ class MainContract {
 
     sealed class MainEvent : ViewEvent {
         object OnClickHomeButton : MainEvent()
-        object OnClickContractButton : MainEvent()
+        object OnClickGroupButton : MainEvent()
         object OnClickStartService: MainEvent()
         object OnClickStopService: MainEvent()
     }

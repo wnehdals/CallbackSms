@@ -17,6 +17,7 @@ import com.jdm.alija.base.BaseActivity
 import com.jdm.alija.base.BaseFragment
 import com.jdm.alija.databinding.ActivityMainBinding
 import com.jdm.alija.presentation.ui.contract.ContractFragment
+import com.jdm.alija.presentation.ui.group.GroupFragment
 import com.jdm.alija.presentation.ui.home.HomeFragment
 import com.jdm.alija.presentation.util.Const.ACTION_START_LOCATION_SERVICE
 import com.jdm.alija.presentation.util.Const.ACTION_STOP_LOCATION_SERVICE
@@ -32,13 +33,13 @@ class MainActivity : BaseActivity<ActivityMainBinding>() {
     private val launcher = registerForActivityResult(ActivityResultContracts.RequestPermission()) {
 
     }
-    private val contractFragment: ContractFragment by lazy { ContractFragment.newInstance() }
+    private val groupFragment: GroupFragment by lazy { GroupFragment.newInstance() }
     private val homeFragment: HomeFragment by lazy { HomeFragment.newInstance() }
     private val bottomIcons: List<AppCompatImageView> by lazy {
-        listOf(R.id.iv_home, R.id.iv_contract).map { findViewById(it) }
+        listOf(R.id.iv_home, R.id.iv_group).map { findViewById(it) }
     }
     private val bottomTexts: List<AppCompatTextView> by lazy {
-        listOf(R.id.tv_home, R.id.tv_contract).map { findViewById(it) }
+        listOf(R.id.tv_home, R.id.tv_group).map { findViewById(it) }
     }
     override fun initView() {
         /*
@@ -123,7 +124,7 @@ class MainActivity : BaseActivity<ActivityMainBinding>() {
                         is MainContract.MainSideEffect.ShowFragment -> {
                             when (effect.tag) {
                                 HomeFragment.TAG -> { showFragment(homeFragment, HomeFragment.TAG) }
-                                ContractFragment.TAG -> { showFragment(contractFragment, ContractFragment.TAG) }
+                                GroupFragment.TAG -> { showFragment(groupFragment, GroupFragment.TAG) }
                             }
                         }
                         is MainContract.MainSideEffect.StartService -> {
@@ -146,8 +147,8 @@ class MainActivity : BaseActivity<ActivityMainBinding>() {
         binding.llHome.setOnClickListener {
             mainViewModel.setEvent(MainContract.MainEvent.OnClickHomeButton)
         }
-        binding.llContract.setOnClickListener {
-            mainViewModel.setEvent(MainContract.MainEvent.OnClickContractButton)
+        binding.llGroup.setOnClickListener {
+            mainViewModel.setEvent(MainContract.MainEvent.OnClickGroupButton)
         }
         /*
         binding.btStart.setOnClickListener {
@@ -208,7 +209,7 @@ class MainActivity : BaseActivity<ActivityMainBinding>() {
                 bottomIcons[0].isSelected = true
                 bottomTexts[0].isSelected = true
             }
-            ContractFragment.TAG -> {
+            GroupFragment.TAG -> {
                 bottomIcons[1].isSelected = true
                 bottomTexts[1].isSelected = true
             }

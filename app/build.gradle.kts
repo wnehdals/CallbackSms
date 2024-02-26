@@ -1,3 +1,5 @@
+import com.android.build.gradle.internal.cxx.configure.gradleLocalProperties
+
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
@@ -5,6 +7,7 @@ plugins {
     id("com.google.dagger.hilt.android")
     id("kotlin-parcelize")
     id("org.jetbrains.kotlin.plugin.serialization")
+    id("androidx.navigation.safeargs.kotlin")
 
 }
 
@@ -21,14 +24,32 @@ android {
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
+    signingConfigs {
+        create("release") {
+            keyAlias = "callbacksms"
+            keyPassword = getPropertyKey("keyPassword")
+            storeFile = file("./Key.jks")
+            storePassword = getPropertyKey("storePassword")
+        }
+    }
 
     buildTypes {
-        release {
+        getByName("debug") {
             isMinifyEnabled = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+            isDebuggable = true
+        }
+        getByName("release") {
+            isMinifyEnabled = true
+            signingConfig = signingConfigs.getByName("release")
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules.pro"
+            )
+            isDebuggable = false
         }
     }
     compileOptions {
@@ -52,6 +73,7 @@ dependencies {
     implementation ("com.google.android.material:material:1.9.0")
     implementation( "androidx.constraintlayout:constraintlayout:2.1.4")
     implementation ("androidx.fragment:fragment-ktx:1.5.6")
+    //implementation(project(":android-smsmms"))
     val lifecycle_version = "2.6.1"
     implementation ("androidx.lifecycle:lifecycle-viewmodel-ktx:$lifecycle_version")
     implementation ("androidx.lifecycle:lifecycle-livedata-ktx:$lifecycle_version")
@@ -99,7 +121,22 @@ dependencies {
     implementation("io.reactivex.rxjava3:rxkotlin:3.0.1")
     implementation("io.reactivex.rxjava3:rxandroid:3.0.1")
 
+    //Retrofit2
+    val retrofit_version = "2.9.0"
+    implementation( "com.squareup.retrofit2:retrofit:$retrofit_version")
+    implementation( "com.squareup.retrofit2:converter-gson:$retrofit_version")
+
+    val nav_version = "2.7.7"
+    implementation("androidx.navigation:navigation-fragment-ktx:$nav_version")
+    implementation("androidx.navigation:navigation-ui-ktx:$nav_version")
+
+
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
+    implementation("com.klinkerapps:android-smsmms:5.2.6")
+}
+fun getPropertyKey(propertyKey: String): String {
+    val nullableProperty: String? = gradleLocalProperties(rootDir).getProperty(propertyKey)
+    return nullableProperty ?: "null"
 }

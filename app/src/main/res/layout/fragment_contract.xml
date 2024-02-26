@@ -7,12 +7,43 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
         <LinearLayout
+            android:id="@+id/appbar_contact"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            app:layout_constraintTop_toTopOf="parent"
+            android:background="@color/black">
+            <androidx.appcompat.widget.AppCompatImageView
+                android:id="@+id/iv_contact_back"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:src="@drawable/ic_back_white"
+                android:paddingHorizontal="16dp" />
+            <androidx.appcompat.widget.AppCompatTextView
+                style="@style/Label.M"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/str_select_contract"
+                android:layout_weight="1"
+                android:textColor="@color/white"/>
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/tv_group_add"
+                style="@style/Label.M"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:text="@string/str_plus"
+                android:textColor="@color/white"
+                android:paddingHorizontal="16dp"
+                android:gravity="center"/>
+        </LinearLayout>
+        <LinearLayout
             android:id="@+id/ll_contract_search"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="20dp"
             android:layout_marginTop="20dp"
-            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/appbar_contact"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             android:background="@drawable/bg_r8_f_gray200"
@@ -37,17 +68,39 @@
                 android:src="@drawable/ic_search_black"
                 android:layout_marginEnd="8dp"/>
         </LinearLayout>
+        <LinearLayout
+            android:id="@+id/ll_contact_all_select"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/ll_contract_search"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="20dp"
+            android:orientation="horizontal">
+            <androidx.appcompat.widget.AppCompatTextView
+                style="@style/Label.M"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/str_all_select"/>
+            <androidx.appcompat.widget.AppCompatImageView
+                android:id="@+id/iv_contact_all_select"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/sel_check"/>
+        </LinearLayout>
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rv_contact"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_marginTop="16dp"
+            android:layout_marginTop="8dp"
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-            app:layout_constraintTop_toBottomOf="@+id/ll_contract_search"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            tools:listitem="@layout/item_contract"/>
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/ll_contact_all_select"
+            app:layout_constraintVertical_bias="0.0"
+            tools:listitem="@layout/item_contact" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 </layout>

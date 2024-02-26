@@ -1,15 +1,13 @@
 package com.jdm.alija.presentation.ui.contract
 
-import android.net.Uri
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
-import com.jdm.alarmlocation.data.entity.SmsEntity
 import com.jdm.alija.base.BaseViewModel
-import com.jdm.alija.domain.repository.SmsRepository
+import com.jdm.alija.domain.repository.ContactRepository
 import com.jdm.alija.domain.model.Contact
-import com.jdm.alija.domain.repository.ContractRepository
+import com.jdm.alija.domain.repository.MobileRepository
+import com.jdm.alija.domain.usecase.GetAllContactUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
@@ -17,8 +15,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class ContractViewModel @Inject constructor(
-    private val contractRepository: ContractRepository,
-    private val smsRepository: SmsRepository
+    val getAllContactUseCase: GetAllContactUseCase
 ) : BaseViewModel<ContractContract.ContractViewState, ContractContract.ContractSideEffect, ContractContract.ContractEvent>(
     ContractContract.ContractViewState()
 ) {
@@ -49,29 +46,7 @@ class ContractViewModel @Inject constructor(
 
     fun getContractList(keyword: String = "") {
         viewModelScope.launch {
-            val contactListAsync = async {  contractRepository.getPhoneContacts()}
-            val contactNumberAsync = async { contractRepository.getContactNumbers() }
-            val smsListAsync = async { smsRepository.getAllSms() }
-            val contacts = contactListAsync.await()
-            val contactNumber = contactNumberAsync.await()
-            val smsList = smsListAsync.await()
-            contacts.forEach {
-                contactNumber[it.id]?.let { numbers ->
-                    it.numbers = numbers
-                }
-            }
-            for(contact in contacts) {
-                for(sms in smsList) {
-                    if (contact.id == sms.id) {
-                        contact.isSelected = true
-                        contact.text = sms.text
-                        contact.imgUri = sms.imgUri
-                        contact.isKakao = sms.isKakao
-                        contact.isHidden = sms.isHidden
-                        break
-                    }
-                }
-            }
+            val contacts = getAllContactUseCase.invoke()
             contactOriginData = contacts
             if (keyword.isEmpty()) {
                 _contactData.value = contacts
@@ -82,6 +57,19 @@ class ContractViewModel @Inject constructor(
         }
 
     }
+    fun allCheck(isSelected: Boolean) {
+        for(contact in contactOriginData) {
+            if (contact.isEnable) {
+                contact.isSelected = isSelected
+            }
+        }
+        _contactData.value = contactOriginData
+
+
+
+    }
+
+    /*
     fun insertSms(item: Contact, keyword: String) {
         if (item.isSelected) {
             viewModelScope.launch {
@@ -96,6 +84,8 @@ class ContractViewModel @Inject constructor(
             }
         }
     }
+
+     */
     companion object {
         val TAG = this.javaClass.simpleName
     }

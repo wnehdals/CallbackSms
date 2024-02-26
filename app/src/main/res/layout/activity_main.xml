@@ -20,7 +20,7 @@
         <View
             android:layout_width="match_parent"
             android:layout_height="4dp"
-            android:background="@color/gray_300"
+            android:background="@drawable/bg_gradient_gray50"
             app:layout_constraintBottom_toBottomOf="parent"
             android:layout_marginBottom="48dp"/>
 
@@ -55,26 +55,27 @@
 
             </LinearLayout>
 
+
+
             <LinearLayout
-                android:id="@+id/ll_contract"
+                android:id="@+id/ll_group"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:orientation="vertical"
                 android:gravity="center">
                 <androidx.appcompat.widget.AppCompatImageView
-                    android:id="@+id/iv_contract"
+                    android:id="@+id/iv_group"
                     android:layout_width="24dp"
                     android:layout_height="24dp"
-                    android:src="@drawable/sel_ic_contract"/>
+                    android:src="@drawable/sel_ic_group"/>
                 <androidx.appcompat.widget.AppCompatTextView
-                    android:id="@+id/tv_contract"
+                    android:id="@+id/tv_group"
                     style="@style/Paragraph.XS"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textColor="@color/c_bottom_text"
-                    android:text="@string/str_contract"/>
-
+                    android:text="@string/str_group"/>
             </LinearLayout>
 
         </LinearLayout>
