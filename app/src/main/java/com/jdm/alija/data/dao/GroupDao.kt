@@ -24,4 +24,9 @@ interface GroupDao {
     @Update(onConflict = OnConflictStrategy.REPLACE)
     suspend fun update(entity: GroupEntity): Int
 
+    @Query("SELECT * FROM `Group` WHERE name = :groupName")
+    suspend fun selectGroupByGroupName(groupName: String): GroupEntity
+    @Query("SELECT * FROM `Group` WHERE id = :id")
+    suspend fun selectGroupById(id: Int): GroupEntity
+
 }

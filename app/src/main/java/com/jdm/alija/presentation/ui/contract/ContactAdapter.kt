@@ -5,6 +5,7 @@ import android.graphics.Color
 import android.text.SpannableStringBuilder
 import android.text.Spanned
 import android.text.style.ForegroundColorSpan
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -43,6 +44,9 @@ class ContactAdapter(
         currentList.addAll(data)
         notifyDataSetChanged()
     }
+    fun allSelect(value: Boolean) {
+        currentList.forEach { it.isSelected = value }
+    }
 
     inner class ViewHolder(
         val binding: ItemContactBinding,
@@ -52,42 +56,18 @@ class ContactAdapter(
     ) {
         init {
             binding.ivItemContactCheck.setOnClickListener {
-                currentList[bindingAdapterPosition].isSelected = !currentList[bindingAdapterPosition].isSelected
-                notifyItemChanged(bindingAdapterPosition)
+                Log.e("ppppp", "${bindingAdapterPosition}")
                 onItemSwitchClick(currentList[bindingAdapterPosition], bindingAdapterPosition)
             }
         }
 
         fun bindView(item: Contact) {
             with(binding) {
-                tvItemContactIncall.visibility = if (item.isIncall) View.VISIBLE else View.GONE
-                tvItemContactOutcall.visibility = if (item.isOutCall) View.VISIBLE else View.GONE
-                tvItemContactReleasecall.visibility = if (item.isReleaseCall) View.VISIBLE else View.GONE
                 tvItemContactName.text = item.name
-                tvItemContactGroupName.text = item.groupName
-                if (item.numbers.size > 1) {
-                    var mobile = ""
-                    var idx = 0
-                    var end = 0
-                    for(i in item.numbers.indices) {
-                        if (item.numbers[i] == item.mobile) {
-                            idx = i
-                            end = item.numbers[i].length
-                        }
-                        if (i < item.numbers.size-1)
-                            mobile += "${item.numbers[i]}, "
-                        else
-                            mobile += "${item.numbers[i]}"
-                    }
-                    val span = SpannableStringBuilder(mobile)
-                    span.setSpan(ForegroundColorSpan(Color.BLACK), idx, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
-                    tvItemContactGroupPhone.setText(span, TextView.BufferType.SPANNABLE)
-                } else if (item.numbers.size == 1){
-                    tvItemContactGroupPhone.setTextColor(ContextCompat.getColor(context, R.color.black))
-                    tvItemContactGroupPhone.text = item.numbers[0]
-                }
+                tvItemContactGroupPhone.text = item.mobile
                 ivItemContactCheck.isEnabled = item.isEnable
                 ivItemContactCheck.isSelected = item.isSelected
+                tvItemContactGroupName.text = item.groupName
             }
         }
     }

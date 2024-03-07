@@ -28,4 +28,7 @@ interface ContactDao {
 
     @Query("DELETE FROM CONTACT WHERE groupName = :groupName")
     suspend fun deleteContactByGroupName(groupName: String)
+
+    @Query("SELECT * FROM CONTACT WHERE mobile = :mobile")
+    suspend fun selectContactByMobile(mobile: String): ContactEntity?
 }

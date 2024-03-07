@@ -12,21 +12,26 @@
             android:orientation="horizontal"
             android:gravity="center_vertical"
             app:layout_constraintTop_toTopOf="parent"
-            android:background="@color/black">
-
+            android:background="@color/gray_50">
+            <androidx.appcompat.widget.AppCompatImageView
+                android:id="@+id/iv_group_back"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_back_black"
+                android:layout_marginStart="20dp"/>
             <androidx.appcompat.widget.AppCompatTextView
                 style="@style/Label.M"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/str_group"
                 android:layout_weight="1"
-                android:layout_marginStart="20dp"
-                android:textColor="@color/white"/>
+                android:layout_marginStart="8dp" />
         </LinearLayout>
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rv_group"
             android:layout_width="match_parent"
             android:layout_height="0dp"
+            android:background="@color/gray_50"
             app:layout_constraintTop_toBottomOf="@+id/appbar_group"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"

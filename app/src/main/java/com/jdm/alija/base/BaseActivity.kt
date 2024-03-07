@@ -52,10 +52,12 @@ abstract class BaseActivity<T : ViewDataBinding> : AppCompatActivity() {
     override fun finish() {
         super.finish()
         slideLeft()
+
     }
     fun goToActivity(intent: Intent) {
         startActivity(intent)
         slideRight()
+
     }
     protected fun isPermissionAllow(permission: String): Boolean {
         return checkSelfPermission(permission) == PackageManager.PERMISSION_GRANTED

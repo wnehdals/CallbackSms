@@ -11,6 +11,7 @@ class ContractContract {
     ) : ViewState
 
     sealed class ContractSideEffect : ViewSideEffect {
+        object GoToBack: ContractSideEffect()
     }
 
     sealed class ContractEvent : ViewEvent {

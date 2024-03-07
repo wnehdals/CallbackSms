@@ -23,7 +23,7 @@ class EditTextDialog(
         isCancelable = isCancel
         with(binding) {
             commonDialogEvenTitle.text = title
-            commonDialogEvenMsg.text = msg
+            etDialogEdit.hint = msg
             tvDialogCommonEvenRight.text = rightText
 
             if (leftText != null) {

@@ -16,9 +16,9 @@ import com.jdm.alija.presentation.service.SmsService
 import com.jdm.alija.base.BaseActivity
 import com.jdm.alija.base.BaseFragment
 import com.jdm.alija.databinding.ActivityMainBinding
-import com.jdm.alija.presentation.ui.contract.ContractFragment
-import com.jdm.alija.presentation.ui.group.GroupFragment
 import com.jdm.alija.presentation.ui.home.HomeFragment
+import com.jdm.alija.presentation.ui.setting.SettingFragment
+import com.jdm.alija.presentation.ui.msg.MessageFragment
 import com.jdm.alija.presentation.util.Const.ACTION_START_LOCATION_SERVICE
 import com.jdm.alija.presentation.util.Const.ACTION_STOP_LOCATION_SERVICE
 import com.jdm.alija.presentation.util.Const.SERVICE_NAME
@@ -33,13 +33,13 @@ class MainActivity : BaseActivity<ActivityMainBinding>() {
     private val launcher = registerForActivityResult(ActivityResultContracts.RequestPermission()) {
 
     }
-    private val groupFragment: GroupFragment by lazy { GroupFragment.newInstance() }
     private val homeFragment: HomeFragment by lazy { HomeFragment.newInstance() }
+    private val settingFragment: SettingFragment by lazy { SettingFragment.newInstance() }
     private val bottomIcons: List<AppCompatImageView> by lazy {
-        listOf(R.id.iv_home, R.id.iv_group).map { findViewById(it) }
+        listOf(R.id.iv_home, R.id.iv_setting).map { findViewById(it) }
     }
     private val bottomTexts: List<AppCompatTextView> by lazy {
-        listOf(R.id.tv_home, R.id.tv_group).map { findViewById(it) }
+        listOf(R.id.tv_home, R.id.tv_setting).map { findViewById(it) }
     }
     override fun initView() {
         /*
@@ -124,7 +124,7 @@ class MainActivity : BaseActivity<ActivityMainBinding>() {
                         is MainContract.MainSideEffect.ShowFragment -> {
                             when (effect.tag) {
                                 HomeFragment.TAG -> { showFragment(homeFragment, HomeFragment.TAG) }
-                                GroupFragment.TAG -> { showFragment(groupFragment, GroupFragment.TAG) }
+                                SettingFragment.TAG -> { showFragment(settingFragment, SettingFragment.TAG) }
                             }
                         }
                         is MainContract.MainSideEffect.StartService -> {
@@ -147,8 +147,8 @@ class MainActivity : BaseActivity<ActivityMainBinding>() {
         binding.llHome.setOnClickListener {
             mainViewModel.setEvent(MainContract.MainEvent.OnClickHomeButton)
         }
-        binding.llGroup.setOnClickListener {
-            mainViewModel.setEvent(MainContract.MainEvent.OnClickGroupButton)
+        binding.llSetting.setOnClickListener {
+            mainViewModel.setEvent(MainContract.MainEvent.OnClickSettingButton)
         }
         /*
         binding.btStart.setOnClickListener {
@@ -178,6 +178,7 @@ class MainActivity : BaseActivity<ActivityMainBinding>() {
 
     override fun initData() {
         showFragment(homeFragment, HomeFragment.TAG)
+        mainViewModel.getDefaultGroup()
     }
 
     override fun onResume() {
@@ -209,7 +210,7 @@ class MainActivity : BaseActivity<ActivityMainBinding>() {
                 bottomIcons[0].isSelected = true
                 bottomTexts[0].isSelected = true
             }
-            GroupFragment.TAG -> {
+            SettingFragment.TAG -> {
                 bottomIcons[1].isSelected = true
                 bottomTexts[1].isSelected = true
             }

@@ -25,17 +25,16 @@
         <TextView
             android:id="@+id/common_dialog_even_msg"
             style="@style/Paragraph.M"
+            android:visibility="gone"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="20dp"
-            android:layout_marginTop="20dp"
-            android:text="@string/str_hint_group_name"/>
+            android:layout_marginTop="20dp" />
         <androidx.appcompat.widget.AppCompatEditText
             android:id="@+id/et_dialog_edit"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="20dp"
-            android:background="@null"
             android:layout_marginTop="16dp"
             android:textSize="14sp"/>
         <LinearLayout

@@ -12,6 +12,7 @@ class GroupContract {
 
     sealed class GroupSideEffect : ViewSideEffect {
         data class ShowToast(val msg: String): GroupSideEffect()
+        data class GoToGroupDetail(val group: Group): GroupSideEffect()
     }
 
     sealed class GroupEvent : ViewEvent {

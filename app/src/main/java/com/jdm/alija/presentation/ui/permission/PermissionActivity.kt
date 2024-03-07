@@ -112,8 +112,8 @@ class PermissionActivity : BaseActivity<ActivityPermissionBinding>() {
                             finish()
                         } else {
                             CommonDialog(
-                                title = "배터리 사용량 최적화 중지",
-                                msg = "알리자 앱이 대기모드 또는 절전모드에서 안정적인 콜백 성능을 보장하기 위해서는 해당 어플을 배터리 사용량 최적화 목록에서 \"제외\"해야 합니다\n [확인] 버튼을 누른 후 시스템 알림 대화 상자가 뜨면 [허용] 을 선택해 주세요",
+                                title = "배터리 최적화 예외 앱 지정",
+                                msg = "알리자 앱이 대기모드 또는 절전모드에서 안정적인 콜백 성능을 보장하기 위해서는 해당 앱을 배터리 사용량 최적화 목록에서 \"제외\"해야 합니다\n [확인] 버튼을 누른 후 시스템 알림 대화 상자가 뜨면 [허용] 을 선택해 주세요",
                                 rightText = "확인",
                                 rightClick = {
                                     val intent = Intent()

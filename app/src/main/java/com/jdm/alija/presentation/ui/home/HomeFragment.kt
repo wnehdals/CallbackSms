@@ -2,6 +2,7 @@ package com.jdm.alija.presentation.ui.home
 
 import android.app.ActivityManager
 import android.content.Context
+import android.content.Intent
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.fragment.app.activityViewModels
@@ -9,8 +10,10 @@ import com.jdm.alija.R
 import com.jdm.alija.base.BaseFragment
 import com.jdm.alija.databinding.FragmentHomeBinding
 import com.jdm.alija.dialog.CommonDialog
+import com.jdm.alija.presentation.service.SmsService
 import com.jdm.alija.presentation.ui.main.MainContract
 import com.jdm.alija.presentation.ui.main.MainViewModel
+import com.jdm.alija.presentation.util.Const
 import com.jdm.alija.presentation.util.Const.SERVICE_NAME
 import com.jdm.alija.presentation.util.PreferenceHelper
 import dagger.hilt.android.AndroidEntryPoint
@@ -63,6 +66,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
             } else {
                 mainViewModel.setEvent(MainContract.MainEvent.OnClickStartService)
             }
+
         }
         /*
         binding.on.setOnClickListener {

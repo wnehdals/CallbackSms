@@ -6,6 +6,7 @@ import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.core.content.FileProvider
 import androidx.lifecycle.Lifecycle
@@ -50,7 +51,7 @@ class PhotoSelectActivity : BaseActivity<ActivityPhotoSelectBinding>() {
         binding.ivPhotoSelectBack.setOnClickListener { finish() }
         binding.tvPhotoSelectComplete.setOnClickListener {
             if (photoAdapter.getSelectedPhoto() == null) {
-
+                Toast.makeText(this, getString(R.string.str_select_photo_tmg), Toast.LENGTH_SHORT).show()
             } else {
                 val photo: Photo = photoAdapter.getSelectedPhoto()!!
                 //val imagePath = File(this.filesDir, "images")

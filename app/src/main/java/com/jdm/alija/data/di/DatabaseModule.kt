@@ -3,6 +3,7 @@ package com.jdm.alija.data.di
 import android.content.Context
 import androidx.room.Room
 import com.jdm.alija.data.AppDatabase
+import com.jdm.alija.data.dao.BlackListDao
 import com.jdm.alija.data.dao.ContactDao
 import com.jdm.alija.data.dao.GroupDao
 import dagger.Module
@@ -18,10 +19,7 @@ object DatabaseModule {
     @Provides
     @Singleton
     fun provideRoomDataBase(@ApplicationContext context: Context): AppDatabase {
-        return Room
-            .databaseBuilder(context, AppDatabase::class.java, "AlijaApp.db")
-            .allowMainThreadQueries()
-            .build()
+        return AppDatabase.getInstance(context)
     }
     @Provides
     @Singleton
@@ -32,5 +30,10 @@ object DatabaseModule {
     @Singleton
     fun provideGroupDao(appDatabase: AppDatabase): GroupDao {
         return appDatabase.groupDao()
+    }
+    @Provides
+    @Singleton
+    fun blackListDao(appDatabase: AppDatabase): BlackListDao {
+        return appDatabase.blackListDao()
     }
 }

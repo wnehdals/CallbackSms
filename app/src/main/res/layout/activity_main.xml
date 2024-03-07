@@ -58,24 +58,24 @@
 
 
             <LinearLayout
-                android:id="@+id/ll_group"
+                android:id="@+id/ll_setting"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:orientation="vertical"
                 android:gravity="center">
                 <androidx.appcompat.widget.AppCompatImageView
-                    android:id="@+id/iv_group"
+                    android:id="@+id/iv_setting"
                     android:layout_width="24dp"
                     android:layout_height="24dp"
-                    android:src="@drawable/sel_ic_group"/>
+                    android:src="@drawable/sel_ic_setting"/>
                 <androidx.appcompat.widget.AppCompatTextView
-                    android:id="@+id/tv_group"
+                    android:id="@+id/tv_setting"
                     style="@style/Paragraph.XS"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textColor="@color/c_bottom_text"
-                    android:text="@string/str_group"/>
+                    android:text="@string/str_setting"/>
             </LinearLayout>
 
         </LinearLayout>
