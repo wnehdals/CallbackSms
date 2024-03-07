@@ -15,6 +15,7 @@ import android.os.Parcelable
 import android.telephony.SmsManager
 import android.telephony.SmsMessage
 import android.text.TextUtils
+import android.util.Log
 import com.android.mms.MmsConfig
 import com.android.mms.dom.smil.parser.SmilXmlSerializer
 import com.android.mms.service_alt.MmsNetworkManager
@@ -34,7 +35,6 @@ import com.google.android.mms.pdu_alt.PduPersister
 import com.google.android.mms.pdu_alt.SendReq
 import com.google.android.mms.smil.SmilHelper
 import com.jdm.alija.domain.model.MessageInfo
-import com.klinker.android.logger.Log
 import com.klinker.android.send_message.BroadcastUtils
 import com.klinker.android.send_message.Message
 import com.klinker.android.send_message.Settings
@@ -55,7 +55,7 @@ import java.util.Random
 // (powered by Fernflower decompiler)
 //
 
-
+/*
 class Transaction @JvmOverloads constructor(context: Context, settings: Settings = Settings()) {
     private val context: Context
     private var explicitSentSmsReceiver: Intent? = null
@@ -889,3 +889,5 @@ class Transaction @JvmOverloads constructor(context: Context, settings: Settings
     }
 }
 
+
+ */

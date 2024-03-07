@@ -68,6 +68,9 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
             }
 
         }
+        binding.llHomeGuide.setOnClickListener {
+            mainViewModel.deleteContact()
+        }
         /*
         binding.on.setOnClickListener {
             mainViewModel.setEvent(MainContract.MainEvent.OnClickStartService)

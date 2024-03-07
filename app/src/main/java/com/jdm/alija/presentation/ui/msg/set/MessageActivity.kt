@@ -66,10 +66,47 @@ class MessageActivity : BaseActivity<ActivityMessageBinding>() {
                     binding.tvMessageBeforeCheck.text = if (state.group.isBeforeCheck)
                         beforeCheckList[0].text
                         else beforeCheckList[1].text
-
+                    binding.tvNoneMessageDayDesc.text = makeDayDescString(state.group.mon, state.group.tue, state.group.wed, state.group.thu, state.group.fri, state.group.sat, state.group.sun)
                 }
             }
         }
+    }
+    private fun makeDayDescString(mon: Boolean, tue: Boolean, wed: Boolean, thu: Boolean, fri: Boolean, sat: Boolean, sun: Boolean): String {
+        val list = mutableListOf<String>()
+        if (mon) {
+            list.add("월")
+        }
+        if (tue) {
+            list.add("화")
+        }
+        if (wed) {
+            list.add("수")
+        }
+        if (thu) {
+            list.add("목")
+        }
+        if (fri) {
+            list.add("금")
+        }
+        if (sat) {
+            list.add("토")
+        }
+        if (sun) {
+            list.add("일")
+        }
+        if (list.isEmpty()) {
+            return "문자 전송을 허용한 요일이 없습니다."
+        } else {
+            var str = ""
+            list.forEachIndexed { index, s ->
+                if (index < list.size-1)
+                    str += "${s}, "
+                else
+                    str += "${s}"
+            }
+            return "${str} 요일만 문자를 전송합니다."
+        }
+
     }
 
     override fun initEvent() {

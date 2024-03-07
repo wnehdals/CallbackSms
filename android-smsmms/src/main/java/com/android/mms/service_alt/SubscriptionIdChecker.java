@@ -6,10 +6,12 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteException;
 import android.os.Build;
 import android.provider.Telephony;
-import com.google.android.mms.util_alt.SqliteWrapper;
-import timber.log.Timber;
+import android.util.Log;
 
-class SubscriptionIdChecker {
+import com.google.android.mms.util_alt.SqliteWrapper;
+
+public class SubscriptionIdChecker {
+    private static final String TAG = "SubscriptionIdChecker";
 
     private static SubscriptionIdChecker sInstance;
     private boolean mCanUseSubscriptionId = false;
@@ -26,7 +28,7 @@ class SubscriptionIdChecker {
                     mCanUseSubscriptionId = true;
                 }
             } catch (SQLiteException e) {
-                Timber.e("SubscriptionIdChecker.check() fail");
+                Log.e(TAG, "SubscriptionIdChecker.check() fail");
             } finally {
                 if (c != null) {
                     c.close();
@@ -35,7 +37,7 @@ class SubscriptionIdChecker {
         }
     }
 
-    static synchronized SubscriptionIdChecker getInstance(Context context) {
+    public static synchronized SubscriptionIdChecker getInstance(Context context) {
         if (sInstance == null) {
             sInstance = new SubscriptionIdChecker();
             sInstance.check(context);
@@ -43,7 +45,7 @@ class SubscriptionIdChecker {
         return sInstance;
     }
 
-    boolean canUseSubscriptionId() {
+    public boolean canUseSubscriptionId() {
         return mCanUseSubscriptionId;
     }
 }

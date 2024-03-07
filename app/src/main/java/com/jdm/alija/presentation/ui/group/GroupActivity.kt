@@ -69,6 +69,9 @@ class GroupActivity : BaseActivity<FragmentGroupBinding>() {
                 ).show(supportFragmentManager, EditTextDialog.TAG )
 
             }
+            ivGroupBack.setOnClickListener {
+                finish()
+            }
         }
     }
 

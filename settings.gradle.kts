@@ -15,4 +15,4 @@ dependencyResolutionManagement {
 
 rootProject.name = "Alija"
 include(":app")
-//include(":android-smsmms")
+include(":android-smsmms")

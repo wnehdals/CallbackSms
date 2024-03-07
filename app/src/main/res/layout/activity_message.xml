@@ -402,9 +402,13 @@
                                 android:gravity="center"
                                 android:textColor="@color/c_black_white"
                                 android:text="@string/str_day_7" />
-
                         </LinearLayout>
-
+                        <androidx.appcompat.widget.AppCompatTextView
+                            android:id="@+id/tv_none_message_day_desc"
+                            style="@style/Paragraph.M"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="4dp"/>
 
                     </LinearLayout>
                 </com.google.android.material.card.MaterialCardView>

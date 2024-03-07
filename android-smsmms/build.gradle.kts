@@ -1,14 +1,13 @@
 plugins {
     id ("com.android.library")
-    id ("org.jetbrains.kotlin.android")
 }
 android {
     namespace = "com.klinker.android.send_message"
-    compileSdk = 34
+    compileSdk = 25
 
     defaultConfig {
-        minSdk = 28
-        targetSdk = 34
+        minSdk = 25
+        targetSdk = 25
     }
     buildTypes {
         release {
@@ -26,15 +25,10 @@ android {
         sourceCompatibility = JavaVersion.VERSION_1_8
         targetCompatibility = JavaVersion.VERSION_1_8
     }
-    kotlinOptions {
-        jvmTarget = "1.8"
-    }
     useLibrary("org.apache.http.legacy")
 }
 
 dependencies {
-    implementation ("androidx.core:core-ktx:1.9.0")
-    implementation ("com.jakewharton.timber:timber:5.0.1")
     implementation("com.squareup.okhttp:okhttp:2.5.0")
     implementation ("com.squareup.okhttp:okhttp-urlconnection:2.5.0")
     //implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"

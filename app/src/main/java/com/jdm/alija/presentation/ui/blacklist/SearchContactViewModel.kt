@@ -1,5 +1,6 @@
 package com.jdm.alija.presentation.ui.blacklist
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.jdm.alija.domain.model.BlackContact
@@ -15,7 +16,6 @@ import javax.inject.Inject
 
 @HiltViewModel
 class SearchContactViewModel @Inject constructor(
-    private val getMobileUseCase: GetMobileUseCase,
     private val blackRepository: BlackRepository,
     private val getAllSearchContactUseCase: GetAllSearchContactUseCase
 ) : ViewModel(){
@@ -26,7 +26,7 @@ class SearchContactViewModel @Inject constructor(
 
     fun getContactList() {
         viewModelScope.launch {
-            var contacts: List<BlackContact> = getAllSearchContactUseCase.invoke().map { BlackContact(mobile = it.mobile, name = it.name) }
+            var contacts: List<BlackContact> = getAllSearchContactUseCase.invoke().map { BlackContact(mobile = it.mobile, name = it.name, isSelected = it.isSelected) }
             contactOriginData.addAll(contacts)
             contactData.value = contacts
 
@@ -66,8 +66,10 @@ class SearchContactViewModel @Inject constructor(
         return list
     }
     fun insertBlackList() {
+        Log.e("dd", contactOriginData.toString())
         val selectedList = getSelectedList()
         viewModelScope.launch {
+            blackRepository.getAllContact().forEach { blackRepository.deleteSms(it) }
             for(blackContact in selectedList) {
                 blackRepository.insert(blackContact)
             }

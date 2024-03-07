@@ -12,16 +12,20 @@ import android.telecom.TelecomManager
 import android.util.Log
 import android.view.View
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.activity.viewModels
 import com.jdm.alija.R
 import com.jdm.alija.base.BaseActivity
 import com.jdm.alija.databinding.ActivityPermissionBinding
 import com.jdm.alija.dialog.CommonDialog
 import com.jdm.alija.presentation.ui.main.MainActivity
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class PermissionActivity : BaseActivity<ActivityPermissionBinding>() {
     override val layoutResId: Int
         get() = R.layout.activity_permission
     //RoleManager 방식은 api 29 부터 사용할 수 있음
+    private val permissionViewModel: PermissionViewModel by viewModels()
     private val roleManager: RoleManager? by lazy {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             getSystemService(ROLE_SERVICE) as RoleManager
@@ -69,6 +73,7 @@ class PermissionActivity : BaseActivity<ActivityPermissionBinding>() {
     }
 
     override fun initView() {
+        binding.llPermission.visibility = View.INVISIBLE
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
             permissionList.add(Manifest.permission.READ_PHONE_STATE)
             permissionList.add(Manifest.permission.READ_PHONE_NUMBERS)
@@ -80,26 +85,73 @@ class PermissionActivity : BaseActivity<ActivityPermissionBinding>() {
             permissionList.add((Manifest.permission.POST_NOTIFICATIONS))
         }
         phonePermission = permissionList.toTypedArray()
-        if (isPermissionAllow(phonePermission)) {
-            if (Settings.canDrawOverlays(this)) {
-                if (isWhiteList()) {
-                    val intent = Intent(this, MainActivity::class.java)
-                    goToActivity(intent)
-                    finish()
-                }
-            }
-        }
+
         //binding.llBasePhone.visibility = if (isDefaultDialer) View.GONE else View.VISIBLE
 
     }
+    fun checkPermission() {
+        if (isPermissionAllow(phonePermission)) {
+            if (Settings.canDrawOverlays(this)) {
+                if (isWhiteList()) {
+                    goToMainActivity()
+                } else {
+                    binding.llPermission.visibility = View.VISIBLE
+                }
+            } else {
+                binding.llPermission.visibility = View.VISIBLE
+            }
+        } else {
+            binding.llPermission.visibility = View.VISIBLE
+        }
+    }
 
     override fun subscribe() {
+        permissionViewModel.splashSideEffect.observe(this) {
+            when (it) {
+                ForceVersionUpdate -> {
+                    showForceUpdateDialog()
+                }
+                SelectVersionUpdate -> {
+                    showSelectUpdateDialog()
+                }
+                MoveMain -> {
+                    checkPermission()
+                    //checkNotiPermission()
+                }
+            }
+        }
     }
     private fun isWhiteList(): Boolean {
         val pm = getSystemService(Context.POWER_SERVICE) as PowerManager
         return pm.isIgnoringBatteryOptimizations(packageName)
     }
-
+    fun showForceUpdateDialog() {
+        CommonDialog(
+            title = getString(R.string.str_notification_update),
+            msg = getString(R.string.str_update_guide),
+            rightText = getString(R.string.str_exit_app),
+            rightClick = {
+                exitApp()
+            },
+            isCancel = false
+        ).show(supportFragmentManager, CommonDialog.TAG)
+    }
+    fun showSelectUpdateDialog() {
+        CommonDialog(
+            title = getString(R.string.str_notification_update),
+            msg = getString(R.string.str_update_guide),
+            rightText = getString(R.string.str_do_next),
+            rightClick = {
+                checkPermission()
+            },
+            isCancel = false
+        ).show(supportFragmentManager, CommonDialog.TAG)
+    }
+    fun goToMainActivity() {
+        val intent = Intent(this@PermissionActivity, MainActivity::class.java)
+        goToActivity(intent)
+        finish()
+    }
     override fun initEvent() {
         with(binding){
             btPermissionOk.setOnClickListener {
@@ -107,9 +159,7 @@ class PermissionActivity : BaseActivity<ActivityPermissionBinding>() {
                 if (isPermissionAllow(phonePermission)) {
                     if (Settings.canDrawOverlays(this@PermissionActivity)) {
                         if (isWhiteList()) {
-                            val intent = Intent(this@PermissionActivity, MainActivity::class.java)
-                            goToActivity(intent)
-                            finish()
+                            goToMainActivity()
                         } else {
                             CommonDialog(
                                 title = "배터리 최적화 예외 앱 지정",
@@ -154,10 +204,14 @@ class PermissionActivity : BaseActivity<ActivityPermissionBinding>() {
     }
 
     override fun initData() {
+        permissionViewModel.getAppVersion(this)
     }
 
     companion object {
         val TAG = this.javaClass.simpleName
+        val ForceVersionUpdate = 1
+        val SelectVersionUpdate = 2
+        val MoveMain = 3
     }
 
 }

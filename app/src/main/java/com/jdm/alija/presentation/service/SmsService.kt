@@ -41,7 +41,7 @@ import com.jdm.alija.presentation.util.Const.ACTION_STOP_LOCATION_SERVICE
 import com.jdm.alija.presentation.util.Const.LOCATION_SERVICE_ID
 import com.jdm.alija.presentation.util.FileUtil
 import com.jdm.alija.presentation.util.SmsUtil
-import com.jdm.alija.presentation.util.Transaction
+import com.klinker.android.send_message.Transaction
 import com.klinker.android.send_message.Message
 import com.klinker.android.send_message.Settings
 import dagger.hilt.android.AndroidEntryPoint
@@ -140,6 +140,7 @@ class SmsService : Service() {
     }
     fun sendReleasecallMessage(context: Context, selectGroup: Group, mobile: String) {
         if (selectGroup.isBeforeCheck) {
+            /*
             if (selectGroup.releaseCallImg.isEmpty() || selectGroup.releaseCallImg == "null") {
                 val smsUri = Uri.parse("smsto:" + mobile)
                 val intent = Intent(Intent.ACTION_SENDTO)
@@ -152,6 +153,10 @@ class SmsService : Service() {
                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                 this.startActivity(intent)
             }
+             */
+            val intent = MessageSendActivity.getIntent(context, selectGroup.id, MessageSendActivity.RELEASE, mobile)
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            this.startActivity(intent)
         } else {
             val text = selectGroup.releaseCallText
             val imgPath = selectGroup.releaseCallImg
@@ -161,6 +166,7 @@ class SmsService : Service() {
     }
     fun sendOutcallMessage(context: Context, selectGroup: Group, mobile: String) {
         if (selectGroup.isBeforeCheck) {
+            /*
             if (selectGroup.outcallImg.isEmpty() || selectGroup.outcallImg == "null") {
                 val smsUri = Uri.parse("smsto:" + mobile)
                 val intent = Intent(Intent.ACTION_SENDTO)
@@ -169,10 +175,13 @@ class SmsService : Service() {
                 intent.putExtra("sms_body", "${selectGroup.outcallText}")
                 this@SmsService.startActivity(intent)
             } else {
-                val intent = MessageSendActivity.getIntent(context, selectGroup.id, MessageSendActivity.OUTCALL, mobile)
-                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                this.startActivity(intent)
+
             }
+
+             */
+            val intent = MessageSendActivity.getIntent(context, selectGroup.id, MessageSendActivity.OUTCALL, mobile)
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            this.startActivity(intent)
         } else {
             val text = selectGroup.outcallText
             val imgPath = selectGroup.outcallImg
@@ -182,6 +191,7 @@ class SmsService : Service() {
     }
     fun sendIncallMessage(context: Context, selectGroup: Group, mobile: String) {
         if (selectGroup.isBeforeCheck) {
+            /*
             if (selectGroup.incallImg.isEmpty() || selectGroup.incallImg == "null") {
                 val smsUri = Uri.parse("smsto:" + mobile)
                 val intent = Intent(Intent.ACTION_SENDTO)
@@ -194,6 +204,10 @@ class SmsService : Service() {
                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                 this.startActivity(intent)
             }
+             */
+            val intent = MessageSendActivity.getIntent(context, selectGroup.id, MessageSendActivity.INCALL, mobile)
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            this.startActivity(intent)
         } else {
             val text = selectGroup.incallText
             val imgPath = selectGroup.incallImg

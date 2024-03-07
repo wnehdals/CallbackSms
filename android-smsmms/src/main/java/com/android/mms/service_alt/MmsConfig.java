@@ -24,8 +24,9 @@ import android.telephony.SubscriptionManager;
 import android.telephony.TelephonyManager;
 import android.text.TextUtils;
 import android.util.Base64;
+import android.util.Log;
+
 import com.klinker.android.send_message.R;
-import timber.log.Timber;
 
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Method;
@@ -44,6 +45,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * 4. Add key/value for relevant mms_config.xml of a specific carrier (mcc/mnc)
  */
 public class MmsConfig {
+    private static final String TAG = "MmsConfig";
 
     private static final String DEFAULT_HTTP_KEY_X_WAP_PROFILE = "x-wap-profile";
 
@@ -197,10 +199,10 @@ public class MmsConfig {
         mKeyValues.putAll(DEFAULTS);
         // Load User-Agent and UA profile URL settings
         loadDeviceUaSettings(context);
-        Timber.v("MmsConfig: mUserAgent=" + mUserAgent + ", mUaProfUrl=" + mUaProfUrl);
+        Log.v(TAG, "MmsConfig: mUserAgent=" + mUserAgent + ", mUaProfUrl=" + mUaProfUrl);
         // Load mms_config.xml resource overlays
         loadFromResources(context);
-        Timber.v("MmsConfig: all settings -- " + mKeyValues);
+        Log.v(TAG, "MmsConfig: all settings -- " + mKeyValues);
     }
 
     /**
@@ -217,10 +219,10 @@ public class MmsConfig {
         mKeyValues.putAll(DEFAULTS);
         // Load User-Agent and UA profile URL settings
         loadDeviceUaSettings(context);
-        Timber.v("MmsConfig: mUserAgent=" + mUserAgent + ", mUaProfUrl=" + mUaProfUrl);
+        Log.v(TAG, "MmsConfig: mUserAgent=" + mUserAgent + ", mUaProfUrl=" + mUaProfUrl);
         // Load mms_config.xml resource overlays
         loadFromResources(context);
-        Timber.v("MmsConfig: all settings -- " + mKeyValues);
+        Log.v(TAG, "MmsConfig: all settings -- " + mKeyValues);
     }
 
     /**
@@ -327,7 +329,7 @@ public class MmsConfig {
                 mKeyValues.put(key, value);
             }
         } catch (NumberFormatException e) {
-            Timber.e("MmsConfig.update: invalid " + key + "," + value + "," + type);
+            Log.e(TAG, "MmsConfig.update: invalid " + key + "," + value + "," + type);
         }
     }
 
@@ -336,15 +338,20 @@ public class MmsConfig {
         final TelephonyManager telephonyManager =
                 (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
 
-        mUserAgent = telephonyManager.getMmsUserAgent();
-        mUaProfUrl = telephonyManager.getMmsUAProfUrl();
-        // defaults for nexus 6, seems to work well.
-        //mUserAgent = "nexus6";
-        //mUaProfUrl = "http://uaprof.motorola.com/phoneconfig/nexus6/Profile/nexus6.rdf";
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            mUserAgent = telephonyManager.getMmsUserAgent();
+            mUaProfUrl = telephonyManager.getMmsUAProfUrl();
+            // defaults for nexus 6, seems to work well.
+            //mUserAgent = "nexus6";
+            //mUaProfUrl = "http://uaprof.motorola.com/phoneconfig/nexus6/Profile/nexus6.rdf";
+        } else {
+            mUserAgent = "Android Messaging";
+            mUaProfUrl = "http://www.gstatic.com/android/hangouts/hangouts_mms_ua_profile.xml";
+        }
     }
 
     private void loadFromResources(Context context) {
-        Timber.d("MmsConfig.loadFromResources");
+        Log.d(TAG, "MmsConfig.loadFromResources");
         final XmlResourceParser parser = context.getResources().getXml(R.xml.mms_config);
         final MmsConfigXmlProcessor processor = MmsConfigXmlProcessor.get(parser);
         processor.setMmsConfigHandler(new MmsConfigXmlProcessor.MmsConfigHandler() {
@@ -593,7 +600,9 @@ public class MmsConfig {
                 }
             }
 
-            Timber.v("MmsConfig.getNai: nai=" + nai);
+            if (Log.isLoggable(TAG, Log.VERBOSE)) {
+                Log.v(TAG, "MmsConfig.getNai: nai=" + nai);
+            }
 
             if (!TextUtils.isEmpty(nai)) {
                 String naiSuffix = getNaiSuffix();

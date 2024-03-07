@@ -27,6 +27,7 @@ import android.os.Binder;
 import android.os.Bundle;
 import android.provider.Telephony;
 import android.text.TextUtils;
+import android.util.Log;
 
 import com.android.mms.service_alt.exception.MmsHttpException;
 import com.google.android.mms.MmsException;
@@ -39,30 +40,29 @@ import com.google.android.mms.util_alt.SqliteWrapper;
 import com.klinker.android.send_message.BroadcastUtils;
 import com.klinker.android.send_message.Transaction;
 
-import timber.log.Timber;
-
 /**
  * Request to download an MMS
  */
 public class DownloadRequest extends MmsRequest {
+    private static final String TAG = "DownloadRequest";
 
     private static final String LOCATION_SELECTION =
             Telephony.Mms.MESSAGE_TYPE + "=? AND " + Telephony.Mms.CONTENT_LOCATION + " =?";
 
-    static final String[] PROJECTION = new String[]{
+    static final String[] PROJECTION = new String[] {
             Telephony.Mms.CONTENT_LOCATION
     };
 
     // The indexes of the columns which must be consistent with above PROJECTION.
-    static final int COLUMN_CONTENT_LOCATION = 0;
+    static final int COLUMN_CONTENT_LOCATION      = 0;
 
     private final String mLocationUrl;
     private final PendingIntent mDownloadedIntent;
     private final Uri mContentUri;
 
     public DownloadRequest(RequestManager manager, int subId, String locationUrl,
-                           Uri contentUri, PendingIntent downloadedIntent, String creator,
-                           Bundle configOverrides, Context context) throws MmsException {
+            Uri contentUri, PendingIntent downloadedIntent, String creator,
+            Bundle configOverrides, Context context) throws MmsException {
         super(manager, subId, creator, configOverrides);
 
         if (locationUrl == null) {
@@ -80,7 +80,7 @@ public class DownloadRequest extends MmsRequest {
             throws MmsHttpException {
         final MmsHttpClient mmsHttpClient = netMgr.getOrCreateHttpClient();
         if (mmsHttpClient == null) {
-            Timber.e("MMS network is not ready!");
+            Log.e(TAG, "MMS network is not ready!");
             throw new MmsHttpException(0/*statusCode*/, "MMS network is not ready");
         }
         return mmsHttpClient.execute(
@@ -118,9 +118,9 @@ public class DownloadRequest extends MmsRequest {
         // Let any mms apps running as secondary user know that a new mms has been downloaded.
         notifyOfDownload(context);
 
-        Timber.d("DownloadRequest.persistIfRequired");
+        Log.d(TAG, "DownloadRequest.persistIfRequired");
         if (response == null || response.length < 1) {
-            Timber.e("DownloadRequest.persistIfRequired: empty response");
+            Log.e(TAG, "DownloadRequest.persistIfRequired: empty response");
             // Update the retrieve status of the NotificationInd
             final ContentValues values = new ContentValues(1);
             values.put(Telephony.Mms.RETRIEVE_STATUS, PduHeaders.RETRIEVE_STATUS_ERROR_END);
@@ -141,7 +141,7 @@ public class DownloadRequest extends MmsRequest {
             final GenericPdu pdu =
                     (new PduParser(response, mmsConfig.getSupportMmsContentDisposition())).parse();
             if (pdu == null || !(pdu instanceof RetrieveConf)) {
-                Timber.e("DownloadRequest.persistIfRequired: invalid parsed PDU");
+                Log.e(TAG, "DownloadRequest.persistIfRequired: invalid parsed PDU");
 
                 // Update the error type of the NotificationInd
                 setErrorType(context, locationUrl, Telephony.MmsSms.ERR_TYPE_MMS_PROTO_PERMANENT);
@@ -150,7 +150,7 @@ public class DownloadRequest extends MmsRequest {
             final RetrieveConf retrieveConf = (RetrieveConf) pdu;
             final int status = retrieveConf.getRetrieveStatus();
 //            if (status != PduHeaders.RETRIEVE_STATUS_OK) {
-//                Timber.e("DownloadRequest.persistIfRequired: retrieve failed "
+//                Log.e(TAG, "DownloadRequest.persistIfRequired: retrieve failed "
 //                        + status);
 //                // Update the retrieve status of the NotificationInd
 //                final ContentValues values = new ContentValues(1);
@@ -169,19 +169,20 @@ public class DownloadRequest extends MmsRequest {
 //            }
             // Store the downloaded message
             final PduPersister persister = PduPersister.getPduPersister(context);
-            final Uri messageUri = persister.persist(pdu, Telephony.Mms.Inbox.CONTENT_URI, PduPersister.DUMMY_THREAD_ID, true, true, null);
+            final Uri messageUri = persister.persist(
+                    pdu,
+                    Telephony.Mms.Inbox.CONTENT_URI,
+                    true/*createThreadId*/,
+                    true/*groupMmsEnabled*/,
+                    null/*preOpenedFiles*/,
+                    subId);
             if (messageUri == null) {
-                Timber.e("DownloadRequest.persistIfRequired: can not persist message");
+                Log.e(TAG, "DownloadRequest.persistIfRequired: can not persist message");
                 return null;
             }
-
             // Update some of the properties of the message
             final ContentValues values = new ContentValues();
             values.put(Telephony.Mms.DATE, System.currentTimeMillis() / 1000L);
-            try {
-                values.put(Telephony.Mms.DATE_SENT, retrieveConf.getDate());
-            } catch (Exception ignored) {
-            }
             values.put(Telephony.Mms.READ, 0);
             values.put(Telephony.Mms.SEEN, 0);
             if (!TextUtils.isEmpty(creator)) {
@@ -193,30 +194,52 @@ public class DownloadRequest extends MmsRequest {
             }
 
             try {
-                context.getContentResolver().update(messageUri, values, null, null);
-            } catch (SQLiteException e) {
-                // On MIUI and a couple other devices, the above call will fail and say `no such column: sub_id`
-                // If before making that call, we check to see if the sub_id column is available for messageUri, we will
-                // find that it is available, and yet the update call will still fail. So - there's no way we can know
-                // in advance that it will fail, and we have to just try again
-                if (values.containsKey(Telephony.Mms.SUBSCRIPTION_ID)) {
+                values.put(Telephony.Mms.DATE_SENT, retrieveConf.getDate());
+            } catch (Exception e) {
+            }
+
+            try {
+                int rowsUpdated = SqliteWrapper.update(
+                        context,
+                        context.getContentResolver(),
+                        messageUri,
+                        values,
+                        null/*where*/,
+                        null/*selectionArg*/);
+                if (rowsUpdated != 1) {
+                    Log.e(TAG, "DownloadRequest.persistIfRequired: can not update message");
+                }
+
+            } catch (SQLiteException ex) {
+                // if the exception says no such column like sub_id, ignore this value and try update
+                if (ex.getMessage().contains("no such column: sub_id")) {
+                    // ignore this column and proceed.
                     values.remove(Telephony.Mms.SUBSCRIPTION_ID);
-                    context.getContentResolver().update(messageUri, values, null, null);
+                    int rowsUpdated = SqliteWrapper.update(context, context.getContentResolver(), messageUri,
+                            values, null/*where*/, null/*selectionArg*/);
+                    Log.i(TAG, "DownloadRequest.persistIfRequired: updated " + rowsUpdated + " message without sub_id info");
                 } else {
-                    throw e;
+                    throw ex;
                 }
             }
+
             // Delete the corresponding NotificationInd
-            SqliteWrapper.delete(context, context.getContentResolver(), Telephony.Mms.CONTENT_URI, LOCATION_SELECTION,
-                    new String[]{Integer.toString(PduHeaders.MESSAGE_TYPE_NOTIFICATION_IND), locationUrl});
+            SqliteWrapper.delete(context,
+                    context.getContentResolver(),
+                    Telephony.Mms.CONTENT_URI,
+                    LOCATION_SELECTION,
+                    new String[]{
+                            Integer.toString(PduHeaders.MESSAGE_TYPE_NOTIFICATION_IND),
+                            locationUrl
+                    });
 
             return messageUri;
         } catch (MmsException e) {
-            Timber.e(e, "DownloadRequest.persistIfRequired: can not persist message");
+            Log.e(TAG, "DownloadRequest.persistIfRequired: can not persist message", e);
         } catch (SQLiteException e) {
-            Timber.e(e, "DownloadRequest.persistIfRequired: can not update message");
+            Log.e(TAG, "DownloadRequest.persistIfRequired: can not update message", e);
         } catch (RuntimeException e) {
-            Timber.e(e, "DownloadRequest.persistIfRequired: can not parse response");
+            Log.e(TAG, "DownloadRequest.persistIfRequired: can not parse response", e);
         } finally {
             Binder.restoreCallingIdentity(identity);
         }
@@ -269,7 +292,7 @@ public class DownloadRequest extends MmsRequest {
     /**
      * Transfer the received response to the caller (for download requests write to content uri)
      *
-     * @param fillIn   the intent that will be returned to the caller
+     * @param fillIn the intent that will be returned to the caller
      * @param response the pdu to transfer
      */
     @Override
@@ -285,7 +308,7 @@ public class DownloadRequest extends MmsRequest {
     /**
      * Try downloading via the carrier app.
      *
-     * @param context                        The context
+     * @param context The context
      * @param carrierMessagingServicePackage The carrier messaging service handling the download
      */
     public void tryDownloadingByCarrierApp(Context context, String carrierMessagingServicePackage) {
@@ -303,7 +326,7 @@ public class DownloadRequest extends MmsRequest {
 
     private String getContentLocation(Context context, Uri uri)
             throws MmsException {
-        Cursor cursor = android.database.sqlite.SqliteWrapper.query(context, context.getContentResolver(),
+        Cursor cursor = androidy.database.sqlite.SqliteWrapper.query(context, context.getContentResolver(),
                 uri, PROJECTION, null, null, null);
 
         if (cursor != null) {
@@ -323,10 +346,10 @@ public class DownloadRequest extends MmsRequest {
 
     private static Long getId(Context context, String location) {
         String selection = Telephony.Mms.CONTENT_LOCATION + " = ?";
-        String[] selectionArgs = new String[]{location};
-        Cursor c = android.database.sqlite.SqliteWrapper.query(
+        String[] selectionArgs = new String[] { location };
+        Cursor c = androidy.database.sqlite.SqliteWrapper.query(
                 context, context.getContentResolver(),
-                Telephony.Mms.CONTENT_URI, new String[]{Telephony.Mms._ID},
+                Telephony.Mms.CONTENT_URI, new String[] { Telephony.Mms._ID },
                 selection, selectionArgs, null);
         if (c != null) {
             try {
@@ -350,7 +373,7 @@ public class DownloadRequest extends MmsRequest {
         uriBuilder.appendQueryParameter("protocol", "mms");
         uriBuilder.appendQueryParameter("message", String.valueOf(msgId));
 
-        Cursor cursor = android.database.sqlite.SqliteWrapper.query(context, context.getContentResolver(),
+        Cursor cursor = androidy.database.sqlite.SqliteWrapper.query(context, context.getContentResolver(),
                 uriBuilder.build(), null, null, null, null);
         if (cursor == null) {
             return;
@@ -365,7 +388,7 @@ public class DownloadRequest extends MmsRequest {
                         Telephony.MmsSms.PendingMessages._ID);
                 long id = cursor.getLong(columnIndex);
 
-                android.database.sqlite.SqliteWrapper.update(context, context.getContentResolver(),
+                androidy.database.sqlite.SqliteWrapper.update(context, context.getContentResolver(),
                         Telephony.MmsSms.PendingMessages.CONTENT_URI,
                         values, Telephony.MmsSms.PendingMessages._ID + "=" + id, null);
             }

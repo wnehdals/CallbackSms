@@ -472,6 +472,13 @@
                                 android:textColor="@color/c_black_white" />
 
                         </LinearLayout>
+                        <androidx.appcompat.widget.AppCompatTextView
+                            android:id="@+id/tv_group_detail_day_desc"
+                            style="@style/Paragraph.M"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="4dp"/>
+
 
 
                     </LinearLayout>

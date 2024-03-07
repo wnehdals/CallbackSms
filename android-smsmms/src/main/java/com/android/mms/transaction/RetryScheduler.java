@@ -24,21 +24,25 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
-import android.database.sqlite.SqliteWrapper;
+import androidy.database.sqlite.SqliteWrapper;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
 import android.provider.Telephony.Mms;
 import android.provider.Telephony.MmsSms;
 import android.provider.Telephony.MmsSms.PendingMessages;
+
+import com.android.mms.logs.LogTag;
 import com.android.mms.util.DownloadManager;
 import com.google.android.mms.pdu_alt.PduHeaders;
 import com.google.android.mms.pdu_alt.PduPersister;
+import android.util.Log;
 import com.klinker.android.send_message.BroadcastUtils;
 import com.klinker.android.send_message.R;
-import timber.log.Timber;
 
 public class RetryScheduler implements Observer {
+    private static final String TAG = LogTag.TAG;
+    private static final boolean DEBUG = false;
     private static final boolean LOCAL_LOGV = false;
 
     private final Context mContext;
@@ -68,7 +72,9 @@ public class RetryScheduler implements Observer {
         try {
             Transaction t = (Transaction) observable;
 
-            Timber.v("[RetryScheduler] update " + observable);
+            if (Log.isLoggable(LogTag.TRANSACTION, Log.VERBOSE)) {
+                Log.v(TAG, "[RetryScheduler] update " + observable);
+            }
 
             // We are only supposed to handle M-Notification.ind, M-Send.req
             // and M-ReadRec.ind.
@@ -167,8 +173,10 @@ public class RetryScheduler implements Observer {
                     if ((retryIndex < scheme.getRetryLimit()) && retry) {
                         long retryAt = current + scheme.getWaitingInterval();
 
-                        Timber.v("scheduleRetry: retry for " + uri + " is scheduled at "
-                            + (retryAt - System.currentTimeMillis()) + "ms from now");
+                        if (Log.isLoggable(LogTag.TRANSACTION, Log.VERBOSE)) {
+                            Log.v(TAG, "scheduleRetry: retry for " + uri + " is scheduled at "
+                                    + (retryAt - System.currentTimeMillis()) + "ms from now");
+                        }
 
                         values.put(PendingMessages.DUE_TIME, retryAt);
 
@@ -224,7 +232,7 @@ public class RetryScheduler implements Observer {
                             PendingMessages.CONTENT_URI,
                             values, PendingMessages._ID + "=" + id, null);
                 } else if (LOCAL_LOGV) {
-                    Timber.v("Cannot found correct pending status for: " + msgId);
+                    Log.v(TAG, "Cannot found correct pending status for: " + msgId);
                 }
             } finally {
                 cursor.close();
@@ -272,7 +280,7 @@ public class RetryScheduler implements Observer {
             cursor.close();
         }
         if (respStatus != 0) {
-            Timber.e("Response status is: " + respStatus);
+            Log.e(TAG, "Response status is: " + respStatus);
         }
         return respStatus;
     }
@@ -291,7 +299,9 @@ public class RetryScheduler implements Observer {
             cursor.close();
         }
         if (retrieveStatus != 0) {
-            Timber.v("Retrieve status is: " + retrieveStatus);
+            if (Log.isLoggable(LogTag.TRANSACTION, Log.VERBOSE)) {
+                Log.v(TAG, "Retrieve status is: " + retrieveStatus);
+            }
         }
         return retrieveStatus;
     }
@@ -314,7 +324,10 @@ public class RetryScheduler implements Observer {
                             Context.ALARM_SERVICE);
                     am.set(AlarmManager.RTC, retryAt, operation);
 
-                    Timber.v("Next retry is scheduled at" + (retryAt - System.currentTimeMillis()) + "ms from now");
+                    if (Log.isLoggable(LogTag.TRANSACTION, Log.VERBOSE)) {
+                        Log.v(TAG, "Next retry is scheduled at"
+                                + (retryAt - System.currentTimeMillis()) + "ms from now");
+                    }
                 }
             } finally {
                 cursor.close();

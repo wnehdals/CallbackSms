@@ -117,4 +117,10 @@
     <string name="str_is_before_check_option_2">자동발송</string>
     <string name="str_callback_history">콜백 발송 이력</string>
     <string name="str_callback_history_record">발송 조회</string>
+    <string name="str_exit_app">앱 종료</string>
+    <string name="str_notification_update">업데이트 알림</string>
+    <string name="str_update_guide">더 좋아진 앱의 최신 버전을 준비했습니다. 새로운 버전으로 업데이트 후 이용해주세요.</string>
+    <string name="str_do_update">업데이트 하기</string>
+    <string name="str_do_next">다음에</string>
+
 </resources>

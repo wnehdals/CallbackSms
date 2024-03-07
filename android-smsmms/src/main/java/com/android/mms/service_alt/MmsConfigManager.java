@@ -24,8 +24,9 @@ import android.content.res.Configuration;
 import android.os.Build;
 import android.telephony.SubscriptionInfo;
 import android.telephony.SubscriptionManager;
+import android.telephony.SubscriptionManager.OnSubscriptionsChangedListener;
 import android.util.ArrayMap;
-import timber.log.Timber;
+import android.util.Log;
 
 import java.util.List;
 import java.util.Map;
@@ -37,6 +38,7 @@ import java.util.Map;
  *
  */
 public class MmsConfigManager {
+    private static final String TAG = "MmsConfigManager";
 
     private static volatile MmsConfigManager sInstance = new MmsConfigManager();
 
@@ -62,7 +64,7 @@ public class MmsConfigManager {
     private final BroadcastReceiver mReceiver = new BroadcastReceiver() {
         public void onReceive(Context context, Intent intent) {
             String action = intent.getAction();
-            Timber.i("mReceiver action: " + action);
+            Log.i(TAG, "mReceiver action: " + action);
             if (action.equals("LOADED")) {
                 loadInBackground();
             }
@@ -115,7 +117,7 @@ public class MmsConfigManager {
                 Configuration configuration = mContext.getResources().getConfiguration();
                 // Always put the mnc/mcc in the log so we can tell which mms_config.xml
                 // was loaded.
-                Timber.i("MmsConfigManager.loadInBackground(): mcc/mnc: " +
+                Log.i(TAG, "MmsConfigManager.loadInBackground(): mcc/mnc: " +
                         configuration.mcc + "/" + configuration.mnc);
                 load(mContext);
             }
@@ -136,7 +138,7 @@ public class MmsConfigManager {
         synchronized(mSubIdConfigMap) {
             mmsConfig = mSubIdConfigMap.get(subId);
         }
-        Timber.i("getMmsConfigBySubId -- for sub: " + subId + " mmsConfig: " + mmsConfig);
+        Log.i(TAG, "getMmsConfigBySubId -- for sub: " + subId + " mmsConfig: " + mmsConfig);
         return mmsConfig;
     }
 
@@ -154,7 +156,7 @@ public class MmsConfigManager {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP_MR1) {
             List<SubscriptionInfo> subs = mSubscriptionManager.getActiveSubscriptionInfoList();
             if (subs == null || subs.size() < 1) {
-                Timber.e("MmsConfigManager.load -- empty getActiveSubInfoList");
+                Log.e(TAG, "MmsConfigManager.load -- empty getActiveSubInfoList");
                 return;
             }
             // Load all the mms_config.xml files in a separate map and then swap with the
@@ -166,11 +168,11 @@ public class MmsConfigManager {
                     Configuration config = mContext.getResources().getConfiguration();
                     configuration.mcc = config.mcc;
                     configuration.mnc = config.mnc;
-                    Timber.i("MmsConfigManager.load -- no mcc/mnc for sub: " + sub +
+                    Log.i(TAG, "MmsConfigManager.load -- no mcc/mnc for sub: " + sub +
                             " using mcc/mnc from main context: " + configuration.mcc + "/" +
                             configuration.mnc);
                 } else {
-                    Timber.i("MmsConfigManager.load -- mcc/mnc for sub: " + sub);
+                    Log.i(TAG, "MmsConfigManager.load -- mcc/mnc for sub: " + sub);
 
                     configuration.mcc = sub.getMcc();
                     configuration.mnc = sub.getMnc();

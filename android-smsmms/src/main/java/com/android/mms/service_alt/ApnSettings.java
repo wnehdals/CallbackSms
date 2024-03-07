@@ -19,14 +19,15 @@ package com.android.mms.service_alt;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.database.Cursor;
-import android.database.sqlite.SqliteWrapper;
-import android.net.NetworkUtilsHelper;
+import androidy.database.sqlite.SqliteWrapper;
+import androidy.net.NetworkUtilsHelper;
 import android.net.Uri;
 import android.preference.PreferenceManager;
 import android.provider.Telephony;
 import android.text.TextUtils;
+import android.util.Log;
+
 import com.android.mms.service_alt.exception.ApnException;
-import timber.log.Timber;
 
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -35,6 +36,7 @@ import java.net.URISyntaxException;
  * APN settings used for MMS transactions
  */
 public class ApnSettings {
+    private static final String TAG = "ApnSettings";
 
     // MMSC URL
     private final String mServiceCenter;
@@ -99,7 +101,7 @@ public class ApnSettings {
             return new ApnSettings(mmsc, mmsProxy, parsePort(mmsPort), "Default from settings");
         }
 
-        Timber.v("ApnSettings: apnName " + apnName);
+        Log.v(TAG, "ApnSettings: apnName " + apnName);
         // TODO: CURRENT semantics is currently broken in telephony. Revive this when it is fixed.
         //String selection = Telephony.Carriers.CURRENT + " IS NOT NULL";
         String selection = null;
@@ -147,7 +149,7 @@ public class ApnSettings {
                                 try {
                                     proxyPort = Integer.parseInt(portString);
                                 } catch (NumberFormatException e) {
-                                    Timber.e("Invalid port " + portString);
+                                    Log.e(TAG, "Invalid port " + portString);
                                     throw new ApnException("Invalid port " + portString);
                                 }
                             }

@@ -11,6 +11,7 @@ import com.klinker.android.send_message.Message
 import com.klinker.android.send_message.Settings
 import dagger.hilt.android.qualifiers.ApplicationContext
 import java.io.ByteArrayOutputStream
+import com.klinker.android.send_message.Transaction
 import javax.inject.Inject
 
 

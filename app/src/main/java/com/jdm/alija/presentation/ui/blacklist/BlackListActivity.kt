@@ -10,6 +10,7 @@ import com.jdm.alija.R
 import com.jdm.alija.base.BaseActivity
 import com.jdm.alija.databinding.ActivityBlackListBinding
 import com.jdm.alija.domain.model.BlackContact
+import com.jdm.alija.presentation.util.slideRight
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -36,11 +37,13 @@ class BlackListActivity : BaseActivity<ActivityBlackListBinding>() {
     override fun initEvent() {
         binding.fab.setOnClickListener {
             searchLauncher.launch(Intent(this, SearchContactActivity::class.java))
+            slideRight()
         }
         binding.ivMessageDetailBack.setOnClickListener {
             finish()
         }
     }
+
 
     override fun initData() {
         blackListViewModel.getBlackList()

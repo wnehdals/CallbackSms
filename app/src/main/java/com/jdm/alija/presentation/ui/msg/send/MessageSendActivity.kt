@@ -29,11 +29,19 @@ class MessageSendActivity : BaseActivity<ActivityMessageSendBinding>() {
             binding.etMessageSend.setText(it)
         }
         messageSendViewModel.imgPath.observe(this) {
-            Glide.with(this)
-                .load(it)
-                .error(R.drawable.ic_img_fail_black)
-                .diskCacheStrategy(DiskCacheStrategy.NONE)
-                .into(binding.ivMeessageSendPhoto)
+            if (it.isEmpty() || it == "null") {
+
+            } else {
+                Glide.with(this)
+                    .load(it)
+                    .error(R.drawable.ic_img_fail_black)
+                    .diskCacheStrategy(DiskCacheStrategy.NONE)
+                    .into(binding.ivMeessageSendPhoto)
+            }
+        }
+        messageSendViewModel.target.observe(this) {
+            binding.tvMessageSendMobile.text = it.mobile
+            binding.tvMessageSendName.text = it.name
         }
     }
 
@@ -61,7 +69,13 @@ class MessageSendActivity : BaseActivity<ActivityMessageSendBinding>() {
         type = intent.getIntExtra(TYPE, -1)
         val groupId = intent.getIntExtra(GROUP_ID, -1)
         mobile = intent.getStringExtra(MOBILE)?: ""
-        messageSendViewModel.getGroup(groupId, type)
+        messageSendViewModel.getGroup(groupId, type, mobile)
+        binding.tvMessageSendAppbarTitle.text = when (type) {
+            INCALL -> getString(R.string.str_incall_mesesage)
+            OUTCALL -> getString(R.string.str_outcall_message)
+            RELEASE -> getString(R.string.str_releasecall_message)
+            else -> ""
+        }
     }
     companion object {
         val GROUP_ID = "GROUP_ID"

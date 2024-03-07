@@ -24,7 +24,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.database.Cursor;
-import android.database.sqlite.SqliteWrapper;
+import androidy.database.sqlite.SqliteWrapper;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
@@ -35,11 +35,18 @@ import android.os.IBinder;
 import android.os.Looper;
 import android.os.Message;
 import android.os.PowerManager;
+import android.preference.PreferenceManager;
 import android.provider.Telephony.Mms;
 import android.provider.Telephony.MmsSms;
 import android.provider.Telephony.MmsSms.PendingMessages;
 import android.text.TextUtils;
 import android.widget.Toast;
+
+import com.android.mms.logs.LogTag;
+import com.android.mms.service_alt.DownloadRequest;
+import com.android.mms.service_alt.MmsNetworkManager;
+import com.android.mms.service_alt.MmsRequestManager;
+import com.android.mms.util.DownloadManager;
 import com.android.mms.util.RateController;
 import com.google.android.mms.MmsException;
 import com.google.android.mms.pdu_alt.GenericPdu;
@@ -47,10 +54,11 @@ import com.google.android.mms.pdu_alt.NotificationInd;
 import com.google.android.mms.pdu_alt.PduHeaders;
 import com.google.android.mms.pdu_alt.PduParser;
 import com.google.android.mms.pdu_alt.PduPersister;
+import android.util.Log;
 import com.klinker.android.send_message.BroadcastUtils;
 import com.klinker.android.send_message.R;
+import com.klinker.android.send_message.Settings;
 import com.klinker.android.send_message.Utils;
-import timber.log.Timber;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -83,6 +91,7 @@ import java.util.ArrayList;
  * </ul>
  */
 public class TransactionService extends Service implements Observer {
+    private static final String TAG = LogTag.TAG;
 
     /**
      * Used to identify notification intents broadcasted by the
@@ -167,10 +176,12 @@ public class TransactionService extends Service implements Observer {
 
     @Override
     public void onCreate() {
-        Timber.v("Creating TransactionService");
+        if (Log.isLoggable(LogTag.TRANSACTION, Log.VERBOSE)) {
+            Log.v(TAG, "Creating TransactionService");
+        }
 
         if (!Utils.isDefaultSmsApp(this)) {
-            Timber.v("not default app, so exiting");
+            Log.v(TAG, "not default app, so exiting");
             stopSelf();
             return;
         }
@@ -202,19 +213,19 @@ public class TransactionService extends Service implements Observer {
 //                new Thread(new Runnable() {
 //                    @Override
 //                    public void run() {
-//                        Timber.v("starting receiving with new lollipop method");
+//                        Log.v(TAG, "starting receiving with new lollipop method");
 //                        try { Thread.sleep(60000); } catch (Exception e) { }
-//                        Timber.v("done sleeping, lets try and grab the message");
+//                        Log.v(TAG, "done sleeping, lets try and grab the message");
 //                        Uri contentUri = Uri.parse(intent.getStringExtra(TransactionBundle.URI));
 //                        String downloadLocation = null;
 //                        Cursor locationQuery = getContentResolver().query(contentUri, new String[]{Telephony.Mms.CONTENT_LOCATION, Telephony.Mms._ID}, null, null, "date desc");
 //
 //                        if (locationQuery != null && locationQuery.moveToFirst()) {
-//                            Timber.v("grabbing content location url");
+//                            Log.v(TAG, "grabbing content location url");
 //                            downloadLocation = locationQuery.getString(locationQuery.getColumnIndex(Telephony.Mms.CONTENT_LOCATION));
 //                        }
 //
-//                        Timber.v("creating request with url: " + downloadLocation);
+//                        Log.v(TAG, "creating request with url: " + downloadLocation);
 //                        DownloadRequest request = new DownloadRequest(downloadLocation, contentUri, null, null, null);
 //                        MmsNetworkManager manager = new MmsNetworkManager(TransactionService.this);
 //                        request.execute(TransactionService.this, manager);
@@ -254,10 +265,12 @@ public class TransactionService extends Service implements Observer {
         } catch (Exception e) {
             mobileDataEnabled = true;
         }
+
         mConnMgr = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
         if (!mobileDataEnabled) {
             Utils.setMobileDataEnabled(this, true);
         }
+
         if (mConnMgr == null) {
             endMmsConnectivity();
             stopSelf(serviceId);
@@ -266,8 +279,11 @@ public class TransactionService extends Service implements Observer {
 
         boolean noNetwork = !isNetworkAvailable();
 
-        Timber.v("onNewIntent: serviceId: " + serviceId + ": " + intent.getExtras() + " intent=" + intent);
-        Timber.v("    networkAvailable=" + !noNetwork);
+        if (Log.isLoggable(LogTag.TRANSACTION, Log.VERBOSE)) {
+            Log.v(TAG, "onNewIntent: serviceId: " + serviceId + ": " + intent.getExtras() +
+                    " intent=" + intent);
+            Log.v(TAG, "    networkAvailable=" + !noNetwork);
+        }
 
         String action = intent.getAction();
         if (ACTION_ONALARM.equals(action) || ACTION_ENABLE_AUTO_RETRIEVE.equals(action) ||
@@ -279,10 +295,14 @@ public class TransactionService extends Service implements Observer {
                 try {
                     int count = cursor.getCount();
 
-                    Timber.v("onNewIntent: cursor.count=" + count + " action=" + action);
+                    if (Log.isLoggable(LogTag.TRANSACTION, Log.VERBOSE)) {
+                        Log.v(TAG, "onNewIntent: cursor.count=" + count + " action=" + action);
+                    }
 
                     if (count == 0) {
-                        Timber.v("onNewIntent: no pending messages. Stopping service.");
+                        if (Log.isLoggable(LogTag.TRANSACTION, Log.VERBOSE)) {
+                            Log.v(TAG, "onNewIntent: no pending messages. Stopping service.");
+                        }
                         RetryScheduler.setRetryAlarm(this);
                         stopSelfIfIdle(serviceId);
                         return;
@@ -296,28 +316,139 @@ public class TransactionService extends Service implements Observer {
                         int msgType = cursor.getInt(columnIndexOfMsgType);
                         int transactionType = getTransactionType(msgType);
 
-                        try {
-                            Uri uri = ContentUris.withAppendedId(Mms.CONTENT_URI,
-                                    cursor.getLong(columnIndexOfMsgId));
-                            com.android.mms.transaction.DownloadManager.getInstance().
-                                    downloadMultimediaMessage(this, PushReceiver.getContentLocation(this, uri), uri, false,  Utils.getDefaultSubscriptionId());
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                            boolean useSystem = true;
+                            int subId = Settings.DEFAULT_SUBSCRIPTION_ID;
+                            if (com.klinker.android.send_message.Transaction.settings != null) {
+                                useSystem = com.klinker.android.send_message.Transaction.settings
+                                        .getUseSystemSending();
+                                subId = com.klinker.android.send_message.Transaction.settings.getSubscriptionId();
+                            } else {
+                                useSystem = PreferenceManager.getDefaultSharedPreferences(this)
+                                        .getBoolean("system_mms_sending", useSystem);
+                            }
 
-                            // can't handle many messages at once.
-                            break;
-                        } catch (MmsException e) {
-                            e.printStackTrace();
+                            if (useSystem) {
+                                try {
+                                    Uri uri = ContentUris.withAppendedId(Mms.CONTENT_URI,
+                                            cursor.getLong(columnIndexOfMsgId));
+                                    com.android.mms.transaction.DownloadManager.getInstance().
+                                            downloadMultimediaMessage(this, PushReceiver.getContentLocation(this, uri), uri, false, subId);
+
+                                    // can't handle many messages at once.
+                                    break;
+                                } catch (MmsException e) {
+                                    e.printStackTrace();
+                                }
+                            } else {
+                                try {
+                                    Uri uri = ContentUris.withAppendedId(Mms.CONTENT_URI,
+                                            cursor.getLong(columnIndexOfMsgId));
+                                    MmsRequestManager requestManager = new MmsRequestManager(this);
+                                    DownloadRequest request = new DownloadRequest(requestManager,
+                                            Utils.getDefaultSubscriptionId(),
+                                            PushReceiver.getContentLocation(this, uri), uri, null, null,
+                                            null, this);
+                                    MmsNetworkManager manager = new MmsNetworkManager(this, Utils.getDefaultSubscriptionId());
+                                    request.execute(this, manager);
+
+                                    // can't handle many messages at once.
+                                    break;
+                                } catch (Exception e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                            continue;
+                        }
+
+                        if (Log.isLoggable(LogTag.TRANSACTION, Log.VERBOSE)) {
+                            Log.v(TAG, "onNewIntent: msgType=" + msgType + " transactionType=" +
+                                    transactionType);
+                        }
+                        if (noNetwork) {
+                            onNetworkUnavailable(serviceId, transactionType);
+                            return;
+                        }
+                        switch (transactionType) {
+                            case -1:
+                                break;
+                            case Transaction.RETRIEVE_TRANSACTION:
+                                // If it's a transiently failed transaction,
+                                // we should retry it in spite of current
+                                // downloading mode. If the user just turned on the auto-retrieve
+                                // option, we also retry those messages that don't have any errors.
+                                int failureType = cursor.getInt(
+                                        cursor.getColumnIndexOrThrow(
+                                                PendingMessages.ERROR_TYPE));
+                                try {
+                                    DownloadManager.init(this);
+                                    DownloadManager downloadManager = DownloadManager.getInstance();
+                                    boolean autoDownload = downloadManager.isAuto();
+                                    if (Log.isLoggable(LogTag.TRANSACTION, Log.VERBOSE)) {
+                                        Log.v(TAG, "onNewIntent: failureType=" + failureType +
+                                                " action=" + action + " isTransientFailure:" +
+                                                isTransientFailure(failureType) + " autoDownload=" +
+                                                autoDownload);
+                                    }
+                                    if (!autoDownload) {
+                                        // If autodownload is turned off, don't process the
+                                        // transaction.
+                                        if (Log.isLoggable(LogTag.TRANSACTION, Log.VERBOSE)) {
+                                            Log.v(TAG, "onNewIntent: skipping - autodownload off");
+                                        }
+                                        // Re-enable "download" button if auto-download is off
+                                        Uri uri = ContentUris.withAppendedId(Mms.CONTENT_URI,
+                                                cursor.getLong(columnIndexOfMsgId));
+                                        downloadManager.markState(uri,
+                                                DownloadManager.STATE_SKIP_RETRYING);
+                                        break;
+                                    }
+                                } catch (Exception e) {
+                                    e.printStackTrace();
+                                }
+
+                                // Logic is twisty. If there's no failure or the failure
+                                // is a non-permanent failure, we want to process the transaction.
+                                // Otherwise, break out and skip processing this transaction.
+                                if (!(failureType == MmsSms.NO_ERROR ||
+                                        isTransientFailure(failureType))) {
+                                    if (Log.isLoggable(LogTag.TRANSACTION, Log.VERBOSE)) {
+                                        Log.v(TAG, "onNewIntent: skipping - permanent error");
+                                    }
+                                    break;
+                                }
+                                if (Log.isLoggable(LogTag.TRANSACTION, Log.VERBOSE)) {
+                                    Log.v(TAG, "onNewIntent: falling through and processing");
+                                }
+                               // fall-through
+                            default:
+                                Uri uri = ContentUris.withAppendedId(
+                                        Mms.CONTENT_URI,
+                                        cursor.getLong(columnIndexOfMsgId));
+                                TransactionBundle args = new TransactionBundle(
+                                        transactionType, uri.toString());
+                                // FIXME: We use the same startId for all MMs.
+                                if (Log.isLoggable(LogTag.TRANSACTION, Log.VERBOSE)) {
+                                    Log.v(TAG, "onNewIntent: launchTransaction uri=" + uri);
+                                }
+                                launchTransaction(serviceId, args, false);
+                                break;
                         }
                     }
                 } finally {
                     cursor.close();
                 }
             } else {
-                Timber.v("onNewIntent: no pending messages. Stopping service.");
+                if (Log.isLoggable(LogTag.TRANSACTION, Log.VERBOSE)) {
+                    Log.v(TAG, "onNewIntent: no pending messages. Stopping service.");
+                }
                 RetryScheduler.setRetryAlarm(this);
                 stopSelfIfIdle(serviceId);
             }
         } else {
-            Timber.v("onNewIntent: launch transaction...");
+            if (Log.isLoggable(LogTag.TRANSACTION, Log.VERBOSE)) {
+                Log.v(TAG, "onNewIntent: launch transaction...");
+            }
             // For launching NotificationTransaction and test purpose.
             TransactionBundle args = new TransactionBundle(intent.getExtras());
             launchTransaction(serviceId, args, noNetwork);
@@ -327,7 +458,9 @@ public class TransactionService extends Service implements Observer {
     private void stopSelfIfIdle(int startId) {
         synchronized (mProcessing) {
             if (mProcessing.isEmpty() && mPending.isEmpty()) {
-                Timber.v("stopSelfIfIdle: STOP!");
+                if (Log.isLoggable(LogTag.TRANSACTION, Log.VERBOSE)) {
+                    Log.v(TAG, "stopSelfIfIdle: STOP!");
+                }
 
                 stopSelf(startId);
             }
@@ -347,14 +480,14 @@ public class TransactionService extends Service implements Observer {
             case PduHeaders.MESSAGE_TYPE_SEND_REQ:
                 return Transaction.SEND_TRANSACTION;
             default:
-                Timber.w("Unrecognized MESSAGE_TYPE: " + msgType);
+                Log.w(TAG, "Unrecognized MESSAGE_TYPE: " + msgType);
                 return -1;
         }
     }
 
     private void launchTransaction(int serviceId, TransactionBundle txnBundle, boolean noNetwork) {
         if (noNetwork) {
-            Timber.w("launchTransaction: no network error!");
+            Log.w(TAG, "launchTransaction: no network error!");
             onNetworkUnavailable(serviceId, txnBundle.getTransactionType());
             return;
         }
@@ -362,12 +495,16 @@ public class TransactionService extends Service implements Observer {
         msg.arg1 = serviceId;
         msg.obj = txnBundle;
 
-        Timber.v("launchTransaction: sending message " + msg);
+        if (Log.isLoggable(LogTag.TRANSACTION, Log.VERBOSE)) {
+            Log.v(TAG, "launchTransaction: sending message " + msg);
+        }
         mServiceHandler.sendMessage(msg);
     }
 
     private void onNetworkUnavailable(int serviceId, int transactionType) {
-        Timber.v("onNetworkUnavailable: sid=" + serviceId + ", type=" + transactionType);
+        if (Log.isLoggable(LogTag.TRANSACTION, Log.VERBOSE)) {
+            Log.v(TAG, "onNetworkUnavailable: sid=" + serviceId + ", type=" + transactionType);
+        }
 
         int toastType = TOAST_NONE;
         if (transactionType == Transaction.RETRIEVE_TRANSACTION) {
@@ -383,9 +520,11 @@ public class TransactionService extends Service implements Observer {
 
     @Override
     public void onDestroy() {
-        Timber.v("Destroying TransactionService");
+        if (Log.isLoggable(LogTag.TRANSACTION, Log.VERBOSE)) {
+            Log.v(TAG, "Destroying TransactionService");
+        }
         if (!mPending.isEmpty()) {
-            Timber.w("TransactionService exiting with transaction still pending");
+            Log.w(TAG, "TransactionService exiting with transaction still pending");
         }
 
         releaseWakeLock();
@@ -398,7 +537,7 @@ public class TransactionService extends Service implements Observer {
         mServiceHandler.sendEmptyMessage(EVENT_QUIT);
 
         if (!mobileDataEnabled && !lollipopReceiving) {
-            Timber.v("disabling mobile data");
+            Log.v(TAG, "disabling mobile data");
             Utils.setMobileDataEnabled(TransactionService.this, false);
         }
     }
@@ -415,23 +554,31 @@ public class TransactionService extends Service implements Observer {
         Transaction transaction = (Transaction) observable;
         int serviceId = transaction.getServiceId();
 
-        Timber.v("update transaction " + serviceId);
+        if (Log.isLoggable(LogTag.TRANSACTION, Log.VERBOSE)) {
+            Log.v(TAG, "update transaction " + serviceId);
+        }
 
         try {
             synchronized (mProcessing) {
                 mProcessing.remove(transaction);
                 if (mPending.size() > 0) {
-                    Timber.v("update: handle next pending transaction...");
+                    if (Log.isLoggable(LogTag.TRANSACTION, Log.VERBOSE)) {
+                        Log.v(TAG, "update: handle next pending transaction...");
+                    }
                     Message msg = mServiceHandler.obtainMessage(
                             EVENT_HANDLE_NEXT_PENDING_TRANSACTION,
                             transaction.getConnectionSettings());
                     mServiceHandler.sendMessage(msg);
                 }
                 else if (mProcessing.isEmpty()) {
-                    Timber.v("update: endMmsConnectivity");
+                    if (Log.isLoggable(LogTag.TRANSACTION, Log.VERBOSE)) {
+                        Log.v(TAG, "update: endMmsConnectivity");
+                    }
                     endMmsConnectivity();
                 } else {
-                    Timber.v("update: mProcessing is not empty");
+                    if (Log.isLoggable(LogTag.TRANSACTION, Log.VERBOSE)) {
+                        Log.v(TAG, "update: mProcessing is not empty");
+                    }
                 }
             }
 
@@ -442,7 +589,9 @@ public class TransactionService extends Service implements Observer {
 
             switch (result) {
                 case TransactionState.SUCCESS:
-                    Timber.v("Transaction complete: " + serviceId);
+                    if (Log.isLoggable(LogTag.TRANSACTION, Log.VERBOSE)) {
+                        Log.v(TAG, "Transaction complete: " + serviceId);
+                    }
 
                     intent.putExtra(STATE_URI, state.getContentUri());
 
@@ -466,14 +615,21 @@ public class TransactionService extends Service implements Observer {
                     }
                     break;
                 case TransactionState.FAILED:
-                    Timber.v("Transaction failed: " + serviceId);
+                    if (Log.isLoggable(LogTag.TRANSACTION, Log.VERBOSE)) {
+                        Log.v(TAG, "Transaction failed: " + serviceId);
+                    }
                     break;
                 default:
-                    Timber.v("Transaction state unknown: " + serviceId + " " + result);
+                    if (Log.isLoggable(LogTag.TRANSACTION, Log.VERBOSE)) {
+                        Log.v(TAG, "Transaction state unknown: " +
+                                serviceId + " " + result);
+                    }
                     break;
             }
 
-            Timber.v("update: broadcast transaction result " + result);
+            if (Log.isLoggable(LogTag.TRANSACTION, Log.VERBOSE)) {
+                Log.v(TAG, "update: broadcast transaction result " + result);
+            }
             // Broadcast the result of the transaction.
             BroadcastUtils.sendExplicitBroadcast(this, intent, TRANSACTION_COMPLETED_ACTION);
         } finally {
@@ -494,41 +650,39 @@ public class TransactionService extends Service implements Observer {
     private void acquireWakeLock() {
         // It's okay to double-acquire this because we are not using it
         // in reference-counted mode.
-        Timber.v("mms acquireWakeLock");
+        Log.v(TAG, "mms acquireWakeLock");
         mWakeLock.acquire();
     }
 
     private void releaseWakeLock() {
         // Don't release the wake lock if it hasn't been created and acquired.
         if (mWakeLock != null && mWakeLock.isHeld()) {
-            Timber.v("mms releaseWakeLock");
+            Log.v(TAG, "mms releaseWakeLock");
             mWakeLock.release();
         }
     }
 
     protected int beginMmsConnectivity() throws IOException {
-        Timber.v("beginMmsConnectivity");
+        if (Log.isLoggable(LogTag.TRANSACTION, Log.VERBOSE)) {
+            Log.v(TAG, "beginMmsConnectivity");
+        }
         // Take a wake lock so we don't fall asleep before the message is downloaded.
         createWakeLock();
 
         if (Utils.isMmsOverWifiEnabled(this)) {
             NetworkInfo niWF = mConnMgr.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
             if ((niWF != null) && (niWF.isConnected())) {
-                Timber.v("beginMmsConnectivity: Wifi active");
+                Log.v(TAG, "beginMmsConnectivity: Wifi active");
                 return 0;
             }
         }
-        int result = 0;
-        try{
-            java.lang.reflect.Method method = mConnMgr.getClass().getMethod("startUsingNetworkFeature",
-                    int.class, String.class); result = (int) method.invoke(ConnectivityManager.TYPE_MOBILE, "enableHIPRI");
-        } catch (Exception e) {
-            //Do something
+
+        int result = mConnMgr.startUsingNetworkFeature(
+                ConnectivityManager.TYPE_MOBILE, "enableMMS");
+
+        if (Log.isLoggable(LogTag.TRANSACTION, Log.VERBOSE)) {
+            Log.v(TAG, "beginMmsConnectivity: result=" + result);
         }
-
-        //int result = mConnMgr.startUsingNetworkFeature(ConnectivityManager.TYPE_MOBILE, "enableMMS");
-
-        Timber.v("beginMmsConnectivity: result=" + result);
 
         switch (result) {
             case 0:
@@ -542,7 +696,9 @@ public class TransactionService extends Service implements Observer {
 
     protected void endMmsConnectivity() {
         try {
-            Timber.v("endMmsConnectivity");
+            if (Log.isLoggable(LogTag.TRANSACTION, Log.VERBOSE)) {
+                Log.v(TAG, "endMmsConnectivity");
+            }
 
             // cancel timer for renewal of lease
             mServiceHandler.removeMessages(EVENT_CONTINUE_MMS_CONNECTIVITY);
@@ -596,7 +752,9 @@ public class TransactionService extends Service implements Observer {
          */
         @Override
         public void handleMessage(Message msg) {
-            Timber.v("Handling incoming message: " + msg + " = " + decodeMessage(msg));
+            if (Log.isLoggable(LogTag.TRANSACTION, Log.VERBOSE)) {
+                Log.v(TAG, "Handling incoming message: " + msg + " = " + decodeMessage(msg));
+            }
 
             Transaction transaction = null;
 
@@ -616,19 +774,21 @@ public class TransactionService extends Service implements Observer {
                         }
                     }
 
-                    Timber.v("handle EVENT_CONTINUE_MMS_CONNECTIVITY event...");
+                    if (Log.isLoggable(LogTag.TRANSACTION, Log.VERBOSE)) {
+                        Log.v(TAG, "handle EVENT_CONTINUE_MMS_CONNECTIVITY event...");
+                    }
 
                     try {
                         int result = beginMmsConnectivity();
                         if (result != 0) {
-                            Timber.v("Extending MMS connectivity returned " + result +
+                            Log.v(TAG, "Extending MMS connectivity returned " + result +
                                     " instead of APN_ALREADY_ACTIVE");
                             // Just wait for connectivity startup without
                             // any new request of APN switch.
                             return;
                         }
                     } catch (IOException e) {
-                        Timber.w("Attempt to extend use of MMS connectivity failed");
+                        Log.w(TAG, "Attempt to extend use of MMS connectivity failed");
                         return;
                     }
 
@@ -642,8 +802,10 @@ public class TransactionService extends Service implements Observer {
                         TransactionBundle args = (TransactionBundle) msg.obj;
                         TransactionSettings transactionSettings;
 
-                        Timber.v("EVENT_TRANSACTION_REQUEST MmscUrl=" +
-                                args.getMmscUrl() + " proxy port: " + args.getProxyAddress());
+                        if (Log.isLoggable(LogTag.TRANSACTION, Log.VERBOSE)) {
+                            Log.v(TAG, "EVENT_TRANSACTION_REQUEST MmscUrl=" +
+                                    args.getMmscUrl() + " proxy port: " + args.getProxyAddress());
+                        }
 
                         // Set the connection settings for this transaction.
                         // If these have not been set in args, load the default settings.
@@ -658,8 +820,10 @@ public class TransactionService extends Service implements Observer {
 
                         int transactionType = args.getTransactionType();
 
-                        Timber.v("handle EVENT_TRANSACTION_REQUEST: transactionType=" +
-                                transactionType + " " + decodeTransactionType(transactionType));
+                        if (Log.isLoggable(LogTag.TRANSACTION, Log.VERBOSE)) {
+                            Log.v(TAG, "handle EVENT_TRANSACTION_REQUEST: transactionType=" +
+                                    transactionType + " " + decodeTransactionType(transactionType));
+                        }
 
                         // Create appropriate transaction
                         switch (transactionType) {
@@ -681,7 +845,7 @@ public class TransactionService extends Service implements Observer {
                                                 TransactionService.this, serviceId,
                                                 transactionSettings, (NotificationInd) ind);
                                     } else {
-                                        Timber.e("Invalid PUSH data.");
+                                        Log.e(TAG, "Invalid PUSH data.");
                                         transaction = null;
                                         return;
                                     }
@@ -692,13 +856,29 @@ public class TransactionService extends Service implements Observer {
                                         TransactionService.this, serviceId,
                                         transactionSettings, args.getUri());
 
-                                Uri u = Uri.parse(args.getUri());
-                                com.android.mms.transaction.DownloadManager.getInstance().
-                                        downloadMultimediaMessage(TransactionService.this,
-                                                ((RetrieveTransaction) transaction).getContentLocation(TransactionService.this, u), u, false, Utils.getDefaultSubscriptionId());
+                                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                                    Uri u = Uri.parse(args.getUri());
+                                    com.android.mms.transaction.DownloadManager.getInstance().
+                                            downloadMultimediaMessage(TransactionService.this,
+                                                    ((RetrieveTransaction) transaction).getContentLocation(TransactionService.this, u), u, false, Settings.DEFAULT_SUBSCRIPTION_ID);
+                                    return;
+                                }
+
+                                break;
+                            case Transaction.SEND_TRANSACTION:
+                                transaction = new SendTransaction(
+                                        TransactionService.this, serviceId,
+                                        transactionSettings, args.getUri());
+                                break;
+                            case Transaction.READREC_TRANSACTION:
+                                transaction = new ReadRecTransaction(
+                                        TransactionService.this, serviceId,
+                                        transactionSettings, args.getUri());
+                                break;
+                            default:
+                                Log.w(TAG, "Invalid transaction type: " + serviceId);
+                                transaction = null;
                                 return;
-
-
                         }
 
                         if (!processTransaction(transaction)) {
@@ -706,9 +886,11 @@ public class TransactionService extends Service implements Observer {
                             return;
                         }
 
-                        Timber.v("Started processing of incoming message: " + msg);
+                        if (Log.isLoggable(LogTag.TRANSACTION, Log.VERBOSE)) {
+                            Log.v(TAG, "Started processing of incoming message: " + msg);
+                        }
                     } catch (Exception ex) {
-                        Timber.w(ex, "Exception occurred while handling message: " + msg);
+                        Log.w(TAG, "Exception occurred while handling message: " + msg, ex);
 
                         if (transaction != null) {
                             try {
@@ -719,7 +901,7 @@ public class TransactionService extends Service implements Observer {
                                     }
                                 }
                             } catch (Throwable t) {
-                                Timber.e(t, "Unexpected Throwable.");
+                                Log.e(TAG, "Unexpected Throwable.", t);
                             } finally {
                                 // Set transaction to null to allow stopping the
                                 // transaction service.
@@ -728,7 +910,9 @@ public class TransactionService extends Service implements Observer {
                         }
                     } finally {
                         if (transaction == null) {
-                            Timber.v("Transaction was null. Stopping self: " + serviceId);
+                            if (Log.isLoggable(LogTag.TRANSACTION, Log.VERBOSE)) {
+                                Log.v(TAG, "Transaction was null. Stopping self: " + serviceId);
+                            }
                             endMmsConnectivity();
                             stopSelf(serviceId);
                         }
@@ -738,7 +922,7 @@ public class TransactionService extends Service implements Observer {
                     processPendingTransaction(transaction, (TransactionSettings) msg.obj);
                     return;
                 default:
-                    Timber.w("what=" + msg.what);
+                    Log.w(TAG, "what=" + msg.what);
                     return;
             }
         }
@@ -767,7 +951,9 @@ public class TransactionService extends Service implements Observer {
         public void processPendingTransaction(Transaction transaction,
                                                TransactionSettings settings) {
 
-            Timber.v("processPendingTxn: transaction=" + transaction);
+            if (Log.isLoggable(LogTag.TRANSACTION, Log.VERBOSE)) {
+                Log.v(TAG, "processPendingTxn: transaction=" + transaction);
+            }
 
             int numProcessTransaction = 0;
             synchronized (mProcessing) {
@@ -788,20 +974,27 @@ public class TransactionService extends Service implements Observer {
                 try {
                     int serviceId = transaction.getServiceId();
 
-                    Timber.v("processPendingTxn: process " + serviceId);
+                    if (Log.isLoggable(LogTag.TRANSACTION, Log.VERBOSE)) {
+                        Log.v(TAG, "processPendingTxn: process " + serviceId);
+                    }
 
                     if (processTransaction(transaction)) {
-                        Timber.v("Started deferred processing of transaction  " + transaction);
+                        if (Log.isLoggable(LogTag.TRANSACTION, Log.VERBOSE)) {
+                            Log.v(TAG, "Started deferred processing of transaction  "
+                                    + transaction);
+                        }
                     } else {
                         transaction = null;
                         stopSelf(serviceId);
                     }
                 } catch (IOException e) {
-                    Timber.w(e, e.getMessage());
+                    Log.w(TAG, e.getMessage(), e);
                 }
             } else {
                 if (numProcessTransaction == 0) {
-                    Timber.v("processPendingTxn: no more transaction, endMmsConnectivity");
+                    if (Log.isLoggable(LogTag.TRANSACTION, Log.VERBOSE)) {
+                        Log.v(TAG, "processPendingTxn: no more transaction, endMmsConnectivity");
+                    }
                     endMmsConnectivity();
                 }
             }
@@ -820,13 +1013,18 @@ public class TransactionService extends Service implements Observer {
             synchronized (mProcessing) {
                 for (Transaction t : mPending) {
                     if (t.isEquivalent(transaction)) {
-                        Timber.v("Transaction already pending: " + transaction.getServiceId());
+                        if (Log.isLoggable(LogTag.TRANSACTION, Log.VERBOSE)) {
+                            Log.v(TAG, "Transaction already pending: " +
+                                    transaction.getServiceId());
+                        }
                         return true;
                     }
                 }
                 for (Transaction t : mProcessing) {
                     if (t.isEquivalent(transaction)) {
-                        Timber.v("Duplicated transaction: " + transaction.getServiceId());
+                        if (Log.isLoggable(LogTag.TRANSACTION, Log.VERBOSE)) {
+                            Log.v(TAG, "Duplicated transaction: " + transaction.getServiceId());
+                        }
                         return true;
                     }
                 }
@@ -837,12 +1035,16 @@ public class TransactionService extends Service implements Observer {
                 * to defer processing the transaction until
                 * connectivity is established.
                 */
-                Timber.v("processTransaction: call beginMmsConnectivity...");
+                if (Log.isLoggable(LogTag.TRANSACTION, Log.VERBOSE)) {
+                    Log.v(TAG, "processTransaction: call beginMmsConnectivity...");
+                }
                 int connectivityResult = beginMmsConnectivity();
                 if (connectivityResult == 1) {
                     mPending.add(transaction);
-                    Timber.v("processTransaction: connResult=APN_REQUEST_STARTED, " +
-                            "defer transaction pending MMS connectivity");
+                    if (Log.isLoggable(LogTag.TRANSACTION, Log.VERBOSE)) {
+                        Log.v(TAG, "processTransaction: connResult=APN_REQUEST_STARTED, " +
+                                "defer transaction pending MMS connectivity");
+                    }
                     return true;
                 }
                 // If there is already a transaction in processing list, because of the previous
@@ -851,19 +1053,26 @@ public class TransactionService extends Service implements Observer {
                 // to the Processing list. But Processing list is never traversed to
                 // resend, resulting in transaction not completed/sent.
                 if (mProcessing.size() > 0) {
-                    Timber.v("Adding transaction to 'mPending' list: " + transaction);
+                    if (Log.isLoggable(LogTag.TRANSACTION, Log.VERBOSE)) {
+                        Log.v(TAG, "Adding transaction to 'mPending' list: " + transaction);
+                    }
                     mPending.add(transaction);
                     return true;
                 } else {
-                    Timber.v("Adding transaction to 'mProcessing' list: " + transaction);
+                    if (Log.isLoggable(LogTag.TRANSACTION, Log.VERBOSE)) {
+                        Log.v(TAG, "Adding transaction to 'mProcessing' list: " + transaction);
+                    }
                     mProcessing.add(transaction);
                }
             }
 
             // Set a timer to keep renewing our "lease" on the MMS connection
-            sendMessageDelayed(obtainMessage(EVENT_CONTINUE_MMS_CONNECTIVITY), APN_EXTENSION_WAIT);
+            sendMessageDelayed(obtainMessage(EVENT_CONTINUE_MMS_CONNECTIVITY),
+                               APN_EXTENSION_WAIT);
 
-            Timber.v("processTransaction: starting transaction " + transaction);
+            if (Log.isLoggable(LogTag.TRANSACTION, Log.VERBOSE)) {
+                Log.v(TAG, "processTransaction: starting transaction " + transaction);
+            }
 
             // Attach to transaction and process it
             transaction.attach(TransactionService.this);
@@ -883,7 +1092,9 @@ public class TransactionService extends Service implements Observer {
         @Override
         public void onReceive(Context context, Intent intent) {
             String action = intent.getAction();
-            Timber.w("ConnectivityBroadcastReceiver.onReceive() action: " + action);
+            if (Log.isLoggable(LogTag.TRANSACTION, Log.VERBOSE)) {
+                Log.w(TAG, "ConnectivityBroadcastReceiver.onReceive() action: " + action);
+            }
 
             if (!action.equals(ConnectivityManager.CONNECTIVITY_ACTION)) {
                 return;
@@ -894,7 +1105,9 @@ public class TransactionService extends Service implements Observer {
             if (mConnMgr != null && Utils.isMobileDataEnabled(context)) {
                 mmsNetworkInfo = mConnMgr.getNetworkInfo(ConnectivityManager.TYPE_MOBILE_MMS);
             } else {
-                Timber.v("mConnMgr is null, bail");
+                if (Log.isLoggable(LogTag.TRANSACTION, Log.VERBOSE)) {
+                    Log.v(TAG, "mConnMgr is null, bail");
+                }
             }
 
             /*
@@ -903,17 +1116,24 @@ public class TransactionService extends Service implements Observer {
              * transaction, if any.
              */
 
-            Timber.v("Handle ConnectivityBroadcastReceiver.onReceive(): " + mmsNetworkInfo);
+            if (Log.isLoggable(LogTag.TRANSACTION, Log.VERBOSE)) {
+                Log.v(TAG, "Handle ConnectivityBroadcastReceiver.onReceive(): " + mmsNetworkInfo);
+            }
 
             // Check availability of the mobile network.
             if (mmsNetworkInfo == null) {
-                Timber.v("mms type is null or mobile data is turned off, bail");
+                if (Log.isLoggable(LogTag.TRANSACTION, Log.VERBOSE)) {
+                    Log.v(TAG, "mms type is null or mobile data is turned off, bail");
+                }
             } else {
                 // This is a very specific fix to handle the case where the phone receives an
                 // incoming call during the time we're trying to setup the mms connection.
                 // When the call ends, restart the process of mms connectivity.
                 if ("2GVoiceCallEnded".equals(mmsNetworkInfo.getReason())) {
-                    Timber.v("   reason is " + "2GVoiceCallEnded" + ", retrying mms connectivity");
+                    if (Log.isLoggable(LogTag.TRANSACTION, Log.VERBOSE)) {
+                        Log.v(TAG, "   reason is " + "2GVoiceCallEnded" +
+                                ", retrying mms connectivity");
+                    }
                     renewMmsConnectivity();
                     return;
                 }
@@ -923,7 +1143,7 @@ public class TransactionService extends Service implements Observer {
                             TransactionService.this, mmsNetworkInfo.getExtraInfo());
                     // If this APN doesn't have an MMSC, mark everything as failed and bail.
                     if (TextUtils.isEmpty(settings.getMmscUrl())) {
-                        Timber.v("   empty MMSC url, bail");
+                        Log.v(TAG, "   empty MMSC url, bail");
                         BroadcastUtils.sendExplicitBroadcast(
                                 TransactionService.this,
                                 new Intent(),
@@ -935,11 +1155,15 @@ public class TransactionService extends Service implements Observer {
                     }
                     mServiceHandler.processPendingTransaction(null, settings);
                 } else {
-                    Timber.v("   TYPE_MOBILE_MMS not connected, bail");
+                    if (Log.isLoggable(LogTag.TRANSACTION, Log.VERBOSE)) {
+                        Log.v(TAG, "   TYPE_MOBILE_MMS not connected, bail");
+                    }
 
                     // Retry mms connectivity once it's possible to connect
                     if (mmsNetworkInfo.isAvailable()) {
-                        Timber.v("   retrying mms connectivity for it's available");
+                        if (Log.isLoggable(LogTag.TRANSACTION, Log.VERBOSE)) {
+                            Log.v(TAG, "   retrying mms connectivity for it's available");
+                        }
                         renewMmsConnectivity();
                     }
                 }

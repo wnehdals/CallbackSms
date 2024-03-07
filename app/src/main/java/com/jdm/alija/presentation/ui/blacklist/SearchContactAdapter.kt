@@ -63,6 +63,7 @@ class SearchContactAdapter(
             with(binding) {
                 tvItemSearchName.text = item.name
                 tvItemSearchMobile.text = item.mobile
+
                 ivItemSearchCheck.isSelected = item.isSelected
             }
         }
