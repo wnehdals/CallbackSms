@@ -10,6 +10,7 @@ import com.jdm.alija.domain.usecase.GetAllContactUseCase
 import com.jdm.alija.domain.usecase.GetAllSearchContactUseCase
 import com.jdm.alija.domain.usecase.GetMobileUseCase
 import com.jdm.alija.presentation.util.SingleLiveEvent
+import com.jdm.alija.presentation.util.SoundSearcher
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -36,7 +37,7 @@ class SearchContactViewModel @Inject constructor(
     }
     fun searchKeyword(keyword: String) {
         val filteredList = mutableListOf<BlackContact>()
-        val nameFilter = contactOriginData.filter { it.name.contains(keyword) }
+        val nameFilter = contactOriginData.filter { SoundSearcher.matchString(it.name, keyword) }
         val numberFilter = contactOriginData.filter { it.mobile.isNotEmpty() }.filter { it.mobile.contains(keyword) }
         filteredList.addAll(nameFilter)
 

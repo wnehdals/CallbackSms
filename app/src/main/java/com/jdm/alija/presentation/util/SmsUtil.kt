@@ -41,6 +41,11 @@ class SmsUtil @Inject constructor(
 
      */
     fun sendSms(context: Context, mobile: String, text: String, imgPath: String) {
+        if (mobile.isEmpty())
+            return
+        if (text.isEmpty() && (imgPath.isEmpty() || imgPath == "null"))
+            return
+
         val settings = Settings()
         settings.useSystemSending = true
         val transaction: Transaction = Transaction(context, settings)

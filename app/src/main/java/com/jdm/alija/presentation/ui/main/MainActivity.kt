@@ -221,19 +221,7 @@ class MainActivity : BaseActivity<ActivityMainBinding>() {
         bottomIcons.forEach { it.isSelected = false }
         bottomTexts.forEach { it.isSelected = false }
     }
-    private fun isLocationServiceRunning(): Boolean {
-        val activityManager: ActivityManager = getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
-        activityManager.getRunningServices(Int.MAX_VALUE).forEach {
-            if (it.service.className == SERVICE_NAME) {
-                if (it.foreground) {
-                    return true
-                }
-            } else {
-                return false
-            }
-        }
-        return false
-    }
+
     companion object {
         val TAG = this.javaClass.simpleName
     }

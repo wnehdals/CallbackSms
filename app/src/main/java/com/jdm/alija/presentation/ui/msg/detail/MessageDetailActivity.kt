@@ -85,7 +85,7 @@ class MessageDetailActivity : BaseActivity<FragmentMessageDetailBinding>() {
             ): Boolean {
                 val bitmap = resource
                 val fileName = "alija" + System.currentTimeMillis() + ".jpg"
-                val path = FileUtil.getExternalFilePath(this@MessageDetailActivity)
+                val path = FileUtil.getExternalFilePath()
                 val file = FileUtil.saveImageIntoFileFromUri(
                     this@MessageDetailActivity,
                     bitmap,

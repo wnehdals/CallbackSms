@@ -42,7 +42,7 @@ class CallComplete : BroadcastReceiver() {
                                     if (step == 2) {
                                         step = 0
                                         val phoneNumber = intent.extras?.getString("incoming_number")
-                                        if (isSmsServiceRunning(context)) {
+                                        if (Const.isSmsServiceRunning(context)) {
                                             if (phoneNumber != null) {
                                                 val intent2 = Intent(context, SmsService::class.java)
                                                 intent2.setAction(ACTION_SEND_SMS_SERVICE)
@@ -85,19 +85,7 @@ class CallComplete : BroadcastReceiver() {
 
         }
     }
-    private fun isSmsServiceRunning(context: Context): Boolean {
-        val activityManager: ActivityManager = context.getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
-        activityManager.getRunningServices(Int.MAX_VALUE).forEach {
-            if (it.service.className == Const.SERVICE_NAME) {
-                if (it.foreground) {
-                    return true
-                }
-            } else {
-                return false
-            }
-        }
-        return false
-    }
+
     companion object {
         val TAG = this.javaClass.simpleName
     }

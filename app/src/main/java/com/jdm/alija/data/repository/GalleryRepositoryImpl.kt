@@ -65,7 +65,6 @@ class GalleryRepositoryImpl @Inject constructor(
                 val datedAddedSecond = cursor.getLong(dateAddedColumn)
                 var mineType = cursor.getString(mineColumn)
                 var size : Long = cursor.getLong(sizeColumn)
-                Log.e("mine type", "${mineType} - ${size / (1000)}kb")
                 result.add(Photo(id = id, uri = mediaUri, dateAddedSecond = datedAddedSecond, size = size))
             }
         }

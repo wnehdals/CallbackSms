@@ -21,14 +21,14 @@ android {
         applicationId = "com.jdm.alija"
         minSdk = 28
         targetSdk = 34
-        versionCode = 1
+        versionCode = 5
         versionName = "1.0.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
     signingConfigs {
         create("release") {
-            keyAlias = "callbacksms"
+            keyAlias = "smscallback"
             keyPassword = getPropertyKey("keyPassword")
             storeFile = file("./Key.jks")
             storePassword = getPropertyKey("storePassword")

@@ -63,7 +63,7 @@ class CallReceiver : BroadcastReceiver() {
         intent.setAction(Const.ACTION_SEND_INCALL_SERVICE)
         intent.putExtra("mobile",incomingNumber )
 
-        if (isSmsServiceRunning(context))
+        if (Const.isSmsServiceRunning(context))
             context.startService(intent)
     }
 
@@ -74,7 +74,7 @@ class CallReceiver : BroadcastReceiver() {
         val intent = Intent(context, SmsService::class.java)
         intent.setAction(Const.ACTION_SEND_OUTCALL_SERVICE)
         intent.putExtra("mobile",incomingNumber )
-        if (isSmsServiceRunning(context))
+        if (Const.isSmsServiceRunning(context))
             context.startService(intent)
     }
     private fun handleReleaseCall(context: Context, intent: Intent, incomingNumber: String?) {
@@ -83,23 +83,11 @@ class CallReceiver : BroadcastReceiver() {
         val intent = Intent(context, SmsService::class.java)
         intent.setAction(Const.ACTION_SEND_RELEASE_SERVICE)
         intent.putExtra("mobile",incomingNumber )
-        if (isSmsServiceRunning(context))
+        if (Const.isSmsServiceRunning(context))
             context.startService(intent)
     }
 
-    private fun isSmsServiceRunning(context: Context): Boolean {
-        val activityManager: ActivityManager = context.getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
-        activityManager.getRunningServices(Int.MAX_VALUE).forEach {
-            if (it.service.className == Const.SERVICE_NAME) {
-                if (it.foreground) {
-                    return true
-                }
-            } else {
-                return false
-            }
-        }
-        return false
-    }
+
     companion object {
         var ring = false
         var callReceived = false

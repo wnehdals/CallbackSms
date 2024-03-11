@@ -6,6 +6,7 @@ import com.jdm.alija.R
 import com.jdm.alija.base.BaseDialogFragment
 import com.jdm.alija.databinding.DialogEditTextBinding
 import com.jdm.alija.presentation.util.TextInputFilter
+import java.util.regex.Pattern
 
 class EditTextDialog(
     private val title: String,
@@ -25,12 +26,11 @@ class EditTextDialog(
             commonDialogEvenTitle.text = title
             etDialogEdit.hint = msg
             tvDialogCommonEvenRight.text = rightText
-
             if (leftText != null) {
                 tvDialogCommonEvenLeft.visibility = android.view.View.VISIBLE
                 tvDialogCommonEvenLeft.text = leftText
             }
-            etDialogEdit.filters = arrayOf(TextInputFilter(), InputFilter.LengthFilter(30))
+            etDialogEdit.filters = arrayOf(InputFilter.LengthFilter(30))
         }
     }
 

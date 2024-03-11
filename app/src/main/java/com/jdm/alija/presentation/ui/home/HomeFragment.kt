@@ -3,13 +3,20 @@ package com.jdm.alija.presentation.ui.home
 import android.app.ActivityManager
 import android.content.Context
 import android.content.Intent
+import android.os.Handler
+import android.util.Log
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
+import com.bumptech.glide.Glide
 import com.jdm.alija.R
 import com.jdm.alija.base.BaseFragment
 import com.jdm.alija.databinding.FragmentHomeBinding
 import com.jdm.alija.dialog.CommonDialog
+import com.jdm.alija.dialog.LoadingDialog
 import com.jdm.alija.presentation.service.SmsService
 import com.jdm.alija.presentation.ui.main.MainContract
 import com.jdm.alija.presentation.ui.main.MainViewModel
@@ -17,6 +24,8 @@ import com.jdm.alija.presentation.util.Const
 import com.jdm.alija.presentation.util.Const.SERVICE_NAME
 import com.jdm.alija.presentation.util.PreferenceHelper
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -24,6 +33,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
     override val layoutResId: Int
         get() = R.layout.fragment_home
     private val mainViewModel : MainViewModel by activityViewModels()
+    private val loadingDialog = LoadingDialog()
     @Inject
     lateinit var preferenceHelper: PreferenceHelper
     override var onBackPressedCallback: OnBackPressedCallback? =
@@ -43,25 +53,35 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
         }
 
     override fun initView() {
+        showLoading()
+
         if (!preferenceHelper.getStopGuide()) {
             showUsageGuideDialog()
         }
-        setActiveUI(isSmsServiceRunning())
+        Glide.with(requireContext())
+            .load("https://hizonenews.com/go/1.jpg")
+            .into(binding.ivHomeAd)
+        //setActiveUI(isSmsServiceRunning())
     }
     private fun setActiveUI(isActive: Boolean) {
         if (isActive) {
-            binding.lvHome.playAnimation()
+            if (!binding.lvHome.isAnimating)
+                binding.lvHome.playAnimation()
             binding.tvHome.text = getString(R.string.str_on)
+            binding.tvHomeAvtive.text = getString(R.string.str_on_guide)
         } else {
-            binding.lvHome.cancelAnimation()
+            if (binding.lvHome.isAnimating)
+                binding.lvHome.cancelAnimation()
             binding.tvHome.text = getString(R.string.str_off)
+            binding.tvHomeAvtive.text = getString(R.string.str_off_guide)
         }
     }
 
     override fun initEvent() {
         binding.lvHome.setOnClickListener {
-            setActiveUI(!isSmsServiceRunning())
-            if (isSmsServiceRunning()) {
+            //setActiveUI(!isSmsServiceRunning())
+            showLoading()
+            if (Const.isSmsServiceRunning(requireContext())) {
                 mainViewModel.setEvent(MainContract.MainEvent.OnClickStopService)
             } else {
                 mainViewModel.setEvent(MainContract.MainEvent.OnClickStartService)
@@ -70,6 +90,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
         }
         binding.llHomeGuide.setOnClickListener {
             mainViewModel.deleteContact()
+            //mainViewModel.setEvent(MainContract.MainEvent.OnClickStopService)
         }
         /*
         binding.on.setOnClickListener {
@@ -84,23 +105,33 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
     }
 
     override fun subscribe() {
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                while (true) {
+                    delay(2000L)
+                    dismissLoading()
+                    setActiveUI(Const.isSmsServiceRunning(requireContext()))
+                }
+            }
+        }
+    }
+    private fun showLoading() {
+        val fm = parentFragmentManager.findFragmentByTag(LoadingDialog.TAG)
+        if (fm == null) {
+            loadingDialog.show(parentFragmentManager, LoadingDialog.TAG)
+        }
+    }
+    private fun dismissLoading() {
+        val fm = parentFragmentManager.findFragmentByTag(LoadingDialog.TAG)
+        fm?.let {
+            loadingDialog.dismiss()
+        }
+
     }
 
     override fun initData() {
     }
-    private fun isSmsServiceRunning(): Boolean {
-        val activityManager: ActivityManager = requireContext().getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
-        activityManager.getRunningServices(Int.MAX_VALUE).forEach {
-            if (it.service.className == SERVICE_NAME) {
-                if (it.foreground) {
-                    return true
-                }
-            } else {
-                return false
-            }
-        }
-        return false
-    }
+
     private fun showUsageGuideDialog() {
         CommonDialog(
             title = getString(R.string.str_usage_guide),

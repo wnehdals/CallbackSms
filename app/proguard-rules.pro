@@ -92,8 +92,8 @@
 -keep,allowobfuscation,allowshrinking class com.google.gson.reflect.TypeToken
 -keep,allowobfuscation,allowshrinking class * extends com.google.gson.reflect.TypeToken
 
--keep class com.jdm.alarmlocation.data.entity.** { <fields>; }
--keep class com.jdm.alarmlocation.domain.model.**{ <fields>; }
+-keep class com.jdm.alija.data.entity.** { <fields>; }
+-keep class com.jdm.alija.domain.model.**{ <fields>; }
 
 ##---------------End: proguard configuration for Gson  ----------
 

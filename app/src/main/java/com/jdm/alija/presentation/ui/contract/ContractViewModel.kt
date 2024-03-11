@@ -9,6 +9,7 @@ import com.jdm.alija.domain.usecase.GetAllContactUseCase
 import com.jdm.alija.domain.usecase.GetGroupByIdUseCase
 import com.jdm.alija.domain.usecase.UpdateGroupUseCase
 import com.jdm.alija.presentation.util.SingleLiveEvent
+import com.jdm.alija.presentation.util.SoundSearcher
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -24,12 +25,21 @@ class ContractViewModel @Inject constructor(
     lateinit var group: Group
     private var contactOriginData = mutableListOf<Contact>()
     val contactData: SingleLiveEvent<List<Contact>> = SingleLiveEvent()
+
+    val indexList = mutableListOf<String>(
+        "ㄱ","ㄴ","ㄷ","ㄹ","ㅁ","ㅂ","ㅅ","ㅇ","ㅈ","ㅊ","ㅋ","ㅌ","ㅍ","ㅎ"
+    )
+    val indexMap = hashMapOf<Int, String>(
+        0 to "가", 1 to "나", 2 to "다", 3 to "라", 4 to "마", 5 to "바", 6 to "사", 7 to "아",
+        8 to "자", 9 to "차", 10 to "카", 11 to "타", 12 to "파", 13 to "하"
+    )
+
     override fun handleEvents(event: ContractContract.ContractEvent) {
 
     }
     fun searchKeyword(keyword: String) {
         val filteredList = mutableListOf<Contact>()
-        val nameFilter = contactOriginData.filter { it.name.contains(keyword) }
+        val nameFilter = contactOriginData.filter { SoundSearcher.matchString(it.name, keyword) }
         val numberFilter = contactOriginData.filter { it.mobile.isNotEmpty() }.filter { it.mobile.contains(keyword) }
         filteredList.addAll(nameFilter)
 

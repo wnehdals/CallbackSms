@@ -65,6 +65,14 @@
                     app:layout_constraintEnd_toEndOf="@id/lv_home"
                     app:layout_constraintStart_toStartOf="@+id/lv_home"
                     app:layout_constraintTop_toTopOf="@+id/lv_home" />
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/tv_home_avtive"
+                    style="@style/Paragraph.M"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    app:layout_constraintTop_toBottomOf="@+id/lv_home"
+                    android:textColor="@color/blue_400"/>
 
                 <LinearLayout
                     android:id="@+id/ll_home_guide"
@@ -135,6 +143,11 @@
                     <androidx.appcompat.widget.AppCompatTextView
                         android:layout_width="match_parent"
                         android:layout_height="20dp" />
+                    <androidx.appcompat.widget.AppCompatImageView
+                        android:id="@+id/iv_home_ad"
+                        android:scaleType="fitXY"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"/>
                 </LinearLayout>
             </androidx.constraintlayout.widget.ConstraintLayout>
         </androidx.core.widget.NestedScrollView>

@@ -9,10 +9,13 @@ import android.app.Service
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.content.pm.ServiceInfo
 import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.Build
+import android.os.Handler
 import android.os.IBinder
+import android.os.Looper
 import android.util.Log
 import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationCompat
@@ -48,6 +51,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.io.File
 import java.util.Calendar
@@ -277,6 +281,10 @@ class SmsService : Service() {
         return flag
     }
 
+    override fun onCreate() {
+        super.onCreate()
+        Log.e("onstartcommand", "oncreate")
+    }
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
 
         notificationManager = NotificationManagerCompat.from(applicationContext)
@@ -297,15 +305,14 @@ class SmsService : Service() {
                 scope.launch {
                     if (mobile.isEmpty()) {
                         return@launch
-                    } else {
-                        sendingMobile = mobile
                     }
-                    /*
-                    if (mobile.length < 3 && mobile.substring(0,3) != "010") {
+                    if (mobile.length > 4 && mobile.substring(0,3) == "010") {
+                        sendingMobile = mobile
+                    } else {
                         return@launch
                     }
 
-                     */
+
                     var blackList = blackListRepository.getAllContact()
                     if (isBlackList(blackList, mobile)) {
                         return@launch
@@ -354,8 +361,11 @@ class SmsService : Service() {
                 scope.launch {
                     if (mobile.isEmpty()) {
                         return@launch
-                    } else {
+                    }
+                    if (mobile.length > 4 && mobile.substring(0,3) == "010") {
                         sendingMobile = mobile
+                    } else {
+                        return@launch
                     }
                     var blackList = blackListRepository.getAllContact()
                     if (isBlackList(blackList, mobile)) {
@@ -406,8 +416,11 @@ class SmsService : Service() {
                 scope.launch {
                     if (mobile.isEmpty()) {
                         return@launch
-                    } else {
+                    }
+                    if (mobile.length > 4 && mobile.substring(0,3) == "010") {
                         sendingMobile = mobile
+                    } else {
+                        return@launch
                     }
                     var blackList = blackListRepository.getAllContact()
                     if (isBlackList(blackList, mobile)) {
@@ -480,9 +493,9 @@ class SmsService : Service() {
                         intent.setData(smsUri)
                         intent.putExtra("sms_body", "")
                         var notification = getNotification(
-                            title = "알리자",
+                            title = getString(R.string.app_name),
                             body = "${body}에게 메시지 발송완료했습니다.",
-                            channelId = "알리자",
+                            channelId = getString(R.string.app_name),
                             channelName = "전송 알림",
                             intent = intent,
                             setOnGoing = false,
@@ -547,33 +560,51 @@ class SmsService : Service() {
     }
 
     fun startLocationUpdates() {
-        var title = "알리자"
-        var body = "알리자 서비스를 중지하려면 탭하여 OFF시켜주세요."
-        var channelId = "알리자"
+        var title = getString(R.string.app_name)
+        var body = "${getString(R.string.app_name)} 서비스를 중지하려면 탭하여 OFF시켜주세요."
+        var channelId = getString(R.string.app_name)
         val intent = Intent(this, MainActivity::class.java)
-        startForeground(
-            LOCATION_SERVICE_ID,
-            getNotification(
-                title = title,
-                body = body,
-                channelId = channelId,
-                channelName = "알림",
-                pushNotiId = 0,
-                intent = intent,
-                setOnGoing = true
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            startForeground(
+                LOCATION_SERVICE_ID,
+                getNotification(
+                    title = title,
+                    body = body,
+                    channelId = channelId,
+                    channelName = "알림",
+                    pushNotiId = 0,
+                    intent = intent,
+                    setOnGoing = true
+                ),
+                ServiceInfo.FOREGROUND_SERVICE_TYPE_SPECIAL_USE
             )
-        )
+        } else {
+            startForeground(
+                LOCATION_SERVICE_ID,
+                getNotification(
+                    title = title,
+                    body = body,
+                    channelId = channelId,
+                    channelName = "알림",
+                    pushNotiId = 0,
+                    intent = intent,
+                    setOnGoing = true
+                )
+            )
+        }
     }
 
     fun stopLocationUpdates() {
+        Log.e("service", "stop servide")
         job.cancel()
-        stopForeground(true)
+        stopForeground(STOP_FOREGROUND_REMOVE)
         stopSelf()
     }
 
     override fun onDestroy() {
+        Log.e("onstartcommand", "ondestroy")
         super.onDestroy()
-        stopLocationUpdates()
+        //stopLocationUpdates()
 
     }
 }

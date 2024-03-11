@@ -115,7 +115,7 @@
             android:exported="false"
             android:screenOrientation="portrait" />
 
-        <service android:name="com.android.mms.transaction.TransactionService" />
+        <service android:name="com.android.mms.transaction.TransactionService"/>
 
         <receiver
             android:name=".presentation.CallReceiver"
