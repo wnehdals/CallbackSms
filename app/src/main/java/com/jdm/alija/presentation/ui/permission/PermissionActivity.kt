@@ -128,7 +128,7 @@ class PermissionActivity : BaseActivity<ActivityPermissionBinding>() {
     fun showForceUpdateDialog() {
         CommonDialog(
             title = getString(R.string.str_notification_update),
-            msg = getString(R.string.str_update_guide),
+            msg = "더 좋아진 앱의 최신 버전을 준비했습니다. 원스토어로 이동하여 설치해주세요.",
             rightText = getString(R.string.str_exit_app),
             rightClick = {
                 exitApp()

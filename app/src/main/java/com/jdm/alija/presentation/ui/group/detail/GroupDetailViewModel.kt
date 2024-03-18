@@ -46,6 +46,12 @@ class GroupDetailViewModel @Inject constructor(
             is GroupDetailContract.GroupDetailEvent.OnClickDuplicate -> {
                 updateDuplicateIdx(event.item.id)
             }
+            is GroupDetailContract.GroupDetailEvent.OnClickDuplicate2 -> {
+                updateDuplicateIdx2(event.item.id)
+            }
+            is GroupDetailContract.GroupDetailEvent.OnClickDuplicate3 -> {
+                updateDuplicateIdx3(event.item.id)
+            }
             is GroupDetailContract.GroupDetailEvent.OnClickDay -> {
                 updateDay(event.idx,event.value)
             }
@@ -97,6 +103,14 @@ class GroupDetailViewModel @Inject constructor(
     }
     fun updateDuplicateIdx(idx: Int) {
         updateState { copy(group = group.copy(dupicateIdx = idx)) }
+        updateGroup()
+    }
+    fun updateDuplicateIdx2(idx: Int) {
+        updateState { copy(group = group.copy(dupicateIdx2 = idx)) }
+        updateGroup()
+    }
+    fun updateDuplicateIdx3(idx: Int) {
+        updateState { copy(group = group.copy(dupicateIdx3 = idx)) }
         updateGroup()
     }
     fun updateIncallActive(value: Boolean) {

@@ -14,7 +14,7 @@ fun MobileEntity.toContract(mobile: String): Contact {
 
 fun ContactEntity.toContact(): Contact {
     return Contact(
-        id = id,
+        id = id.toString(),
         mobile = mobile,
         groupName = groupName
     )
@@ -30,6 +30,8 @@ fun GroupEntity.toGroup(): Group {
         isOutcallActivie = isOutcallActivie,
         isReleaseCallActive = isReleaseCallActive,
         dupicateIdx = dupicateIdx,
+        dupicateIdx2 = dupicateIdx2,
+        dupicateIdx3 = dupicateIdx3,
         incallText = incallText,
         incallImg = incallImg,
         outcallText = outcallText,
@@ -56,6 +58,8 @@ fun Group.toGroupEntity(isInsert: Boolean = false): GroupEntity {
         isOutcallActivie = isOutcallActivie,
         isReleaseCallActive = isReleaseCallActive,
         dupicateIdx = dupicateIdx,
+        dupicateIdx2 = dupicateIdx2,
+        dupicateIdx3 = dupicateIdx3,
         incallText = incallText,
         incallImg = incallImg,
         outcallText = outcallText,
@@ -72,7 +76,7 @@ fun Group.toGroupEntity(isInsert: Boolean = false): GroupEntity {
 
 fun Contact.toContactEntity(): ContactEntity {
     val contactEntity = ContactEntity(
-        id = id,
+        id = id.toInt(),
         mobile = mobile,
         groupName = groupName,
     )

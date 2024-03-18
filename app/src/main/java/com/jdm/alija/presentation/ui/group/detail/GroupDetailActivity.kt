@@ -66,6 +66,8 @@ class GroupDetailActivity : BaseActivity<FragmentGroupDetailBinding>() {
                     binding.swGroupDetailOutcall.isSelected = state.group.isOutcallActivie
                     binding.swGroupDetailReleasecall.isSelected = state.group.isReleaseCallActive
                     binding.tvGroupDetailDuplicate.text = duplicateCheckList[state.group.dupicateIdx].text
+                    binding.tvGroupDetailDuplicateOut.text = duplicateCheckList[state.group.dupicateIdx2].text
+                    binding.tvGroupDetailDuplicateRelease.text = duplicateCheckList[state.group.dupicateIdx3].text
                     binding.tvGroupDetailDay0.isSelected = state.group.mon
                     binding.tvGroupDetailDay1.isSelected = state.group.tue
                     binding.tvGroupDetailDay2.isSelected = state.group.wed
@@ -189,6 +191,32 @@ class GroupDetailActivity : BaseActivity<FragmentGroupDetailBinding>() {
                     showSelectedContactDialog()
                 }
 
+            }
+            llGroupDetailDuplicateOut.setOnClickListener {
+                if (groupDetailViewModel.isContractSelected()) {
+                    ListSelectDialog(
+                        title = getString(R.string.str_message_set_title_3),
+                        duplicateCheckList,
+                        groupDetailViewModel.viewState.value.group.dupicateIdx2,
+                    ) {
+                        groupDetailViewModel.setEvent(GroupDetailContract.GroupDetailEvent.OnClickDuplicate2(it))
+                    }.show(supportFragmentManager, ListSelectDialog.TAG)
+                } else {
+                    showSelectedContactDialog()
+                }
+            }
+            llGroupDetailDuplicateRelease.setOnClickListener {
+                if (groupDetailViewModel.isContractSelected()) {
+                    ListSelectDialog(
+                        title = getString(R.string.str_message_set_title_3),
+                        duplicateCheckList,
+                        groupDetailViewModel.viewState.value.group.dupicateIdx3,
+                    ) {
+                        groupDetailViewModel.setEvent(GroupDetailContract.GroupDetailEvent.OnClickDuplicate3(it))
+                    }.show(supportFragmentManager, ListSelectDialog.TAG)
+                } else {
+                    showSelectedContactDialog()
+                }
             }
             tvGroupDetailDay0.setOnClickListener {
                 if (groupDetailViewModel.isContractSelected()) {

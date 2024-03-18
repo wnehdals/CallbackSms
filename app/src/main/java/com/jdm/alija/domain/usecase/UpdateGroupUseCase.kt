@@ -18,6 +18,8 @@ class UpdateGroupUseCase  @Inject constructor(
                                 isOutcallActivie: Boolean = false,
                                 isReleaseCallActive: Boolean = false,
                                 dupicateIdx: Int = 0,
+                                dupicateIdx2: Int = 0,
+                                dupicateIdx3: Int = 0,
                                 incallText: String = "",
                                 incallImg: String = "",
                                 outcallText: String = "",
@@ -35,7 +37,7 @@ class UpdateGroupUseCase  @Inject constructor(
     ) : Int {
         return groupRepository.update(
             Group(
-                id, name, contactList, isIncallActive, isOutcallActivie, isReleaseCallActive, dupicateIdx, incallText, incallImg, outcallText, outcallImg, releaseCallText, releaseCallImg, mon, tue, wed, thu, fri, sat, sun, isBeforeCheck
+                id, name, contactList, isIncallActive, isOutcallActivie, isReleaseCallActive, dupicateIdx, dupicateIdx2, dupicateIdx3, incallText, incallImg, outcallText, outcallImg, releaseCallText, releaseCallImg, mon, tue, wed, thu, fri, sat, sun, isBeforeCheck
             )
         )
     }

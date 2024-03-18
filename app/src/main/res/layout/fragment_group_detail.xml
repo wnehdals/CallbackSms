@@ -352,13 +352,84 @@
                             android:layout_marginTop="20dp"
                             android:gravity="center_vertical"
                             android:orientation="horizontal">
-
+                            <androidx.appcompat.widget.AppCompatImageView
+                                android:layout_width="16dp"
+                                android:layout_height="16dp"
+                                android:src="@drawable/ic_incall_green300"/>
                             <androidx.appcompat.widget.AppCompatTextView
-                                android:id="@+id/tv_group_detail_duplicate"
                                 style="@style/Paragraph.M"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:layout_weight="1"
+                                android:layout_marginStart="4dp"
+                                android:text="@string/str_incall_mesesage"/>
+                            <androidx.appcompat.widget.AppCompatTextView
+                                android:id="@+id/tv_group_detail_duplicate"
+                                style="@style/Paragraph.M"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="@string/str_one_to_day" />
+
+                            <ImageView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:src="@drawable/ic_arrow_right_black" />
+
+                        </LinearLayout>
+                        <LinearLayout
+                            android:id="@+id/ll_group_detail_duplicate_out"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="20dp"
+                            android:gravity="center_vertical"
+                            android:orientation="horizontal">
+                            <androidx.appcompat.widget.AppCompatImageView
+                                android:layout_width="16dp"
+                                android:layout_height="16dp"
+                                android:src="@drawable/ic_outcall_yellow300"/>
+                            <androidx.appcompat.widget.AppCompatTextView
+                                style="@style/Paragraph.M"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:layout_marginStart="4dp"
+                                android:text="@string/str_outcall_message"/>
+                            <androidx.appcompat.widget.AppCompatTextView
+                                android:id="@+id/tv_group_detail_duplicate_out"
+                                style="@style/Paragraph.M"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="@string/str_one_to_day" />
+
+                            <ImageView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:src="@drawable/ic_arrow_right_black" />
+
+                        </LinearLayout>
+                        <LinearLayout
+                            android:id="@+id/ll_group_detail_duplicate_release"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="20dp"
+                            android:gravity="center_vertical"
+                            android:orientation="horizontal">
+                            <androidx.appcompat.widget.AppCompatImageView
+                                android:layout_width="16dp"
+                                android:layout_height="16dp"
+                                android:src="@drawable/ic_release_call_red300"/>
+                            <androidx.appcompat.widget.AppCompatTextView
+                                style="@style/Paragraph.M"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:layout_marginStart="4dp"
+                                android:text="@string/str_releasecall_message"/>
+                            <androidx.appcompat.widget.AppCompatTextView
+                                android:id="@+id/tv_group_detail_duplicate_release"
+                                style="@style/Paragraph.M"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
                                 android:text="@string/str_one_to_day" />
 
                             <ImageView

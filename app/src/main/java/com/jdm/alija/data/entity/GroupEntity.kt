@@ -15,6 +15,8 @@ data class GroupEntity(
     val isOutcallActivie: Boolean = false,
     val isReleaseCallActive: Boolean = false,
     val dupicateIdx: Int = 0,
+    val dupicateIdx2: Int = 0,
+    val dupicateIdx3: Int = 0,
     val incallText: String = "",
     val incallImg: String = "",
     val outcallText: String = "",

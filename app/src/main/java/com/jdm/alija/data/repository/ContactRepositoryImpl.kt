@@ -3,8 +3,6 @@ package com.jdm.alija.data.repository
 import android.util.Log
 import com.jdm.alija.data.dao.ContactDao
 import com.jdm.alija.data.entity.ContactEntity
-import com.jdm.alija.data.entity.toContactEntity
-import com.jdm.alija.domain.model.Contact
 import com.jdm.alija.domain.model.Group
 import com.jdm.alija.domain.repository.ContactRepository
 import javax.inject.Inject

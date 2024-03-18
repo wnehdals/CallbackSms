@@ -64,7 +64,7 @@ class HistoryAdapter(
             with(binding) {
                 tvItemCallbackHistoryName.text = item.name
                 tvItemCallbackHistoryMobile.text = item.mobile
-                tvItemCallbackHistoryDate.text = "${item.year}-${String.format("%02d", item.month)}-${String.format("%02d", item.day)} ${String.format("%02d", item.hour)}시 ${String.format("%02d", item.minute)}분"
+                tvItemCallbackHistoryDate.text = "${item.year}-${String.format("%02d", item.month+1)}-${String.format("%02d", item.day)} ${String.format("%02d", item.hour)}시 ${String.format("%02d", item.minute)}분"
             }
         }
     }

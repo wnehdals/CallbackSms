@@ -55,6 +55,8 @@ class MessageActivity : BaseActivity<ActivityMessageBinding>() {
                     binding.swNoneMessageOutcall.isSelected = state.group.isOutcallActivie
                     binding.swNoneMessageReleasecall.isSelected = state.group.isReleaseCallActive
                     binding.tvNoneMessageDuplicate.text = duplicateCheckList[state.group.dupicateIdx].text
+                    binding.tvNoneMessageDuplicateOut.text = duplicateCheckList[state.group.dupicateIdx2].text
+                    binding.tvNoneMessageDuplicateRelease.text = duplicateCheckList[state.group.dupicateIdx3].text
                     binding.tvNoneMessageDay0.isSelected = state.group.mon
                     binding.tvNoneMessageDay1.isSelected = state.group.tue
                     binding.tvNoneMessageDay2.isSelected = state.group.wed
@@ -142,6 +144,24 @@ class MessageActivity : BaseActivity<ActivityMessageBinding>() {
                     groupDetailViewModel.viewState.value.group.dupicateIdx,
                 ) {
                     groupDetailViewModel.setEvent(GroupDetailContract.GroupDetailEvent.OnClickDuplicate(it))
+                }.show(supportFragmentManager, ListSelectDialog.TAG)
+            }
+            llNoneMessageDuplicateOut.setOnClickListener {
+                ListSelectDialog(
+                    title = getString(R.string.str_message_set_title_3),
+                    duplicateCheckList,
+                    groupDetailViewModel.viewState.value.group.dupicateIdx2,
+                ) {
+                    groupDetailViewModel.setEvent(GroupDetailContract.GroupDetailEvent.OnClickDuplicate2(it))
+                }.show(supportFragmentManager, ListSelectDialog.TAG)
+            }
+            llNoneMessageDuplicateRelease.setOnClickListener {
+                ListSelectDialog(
+                    title = getString(R.string.str_message_set_title_3),
+                    duplicateCheckList,
+                    groupDetailViewModel.viewState.value.group.dupicateIdx3,
+                ) {
+                    groupDetailViewModel.setEvent(GroupDetailContract.GroupDetailEvent.OnClickDuplicate3(it))
                 }.show(supportFragmentManager, ListSelectDialog.TAG)
             }
             tvNoneMessageDay0.setOnClickListener {

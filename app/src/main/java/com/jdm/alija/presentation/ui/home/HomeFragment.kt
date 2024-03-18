@@ -3,6 +3,8 @@ package com.jdm.alija.presentation.ui.home
 import android.app.ActivityManager
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
+import android.net.Uri
 import android.os.Handler
 import android.util.Log
 import android.widget.Toast
@@ -14,18 +16,24 @@ import androidx.lifecycle.repeatOnLifecycle
 import com.bumptech.glide.Glide
 import com.jdm.alija.R
 import com.jdm.alija.base.BaseFragment
+import com.jdm.alija.data.entity.ContactEntity
 import com.jdm.alija.databinding.FragmentHomeBinding
 import com.jdm.alija.dialog.CommonDialog
 import com.jdm.alija.dialog.LoadingDialog
+import com.jdm.alija.domain.repository.ContactRepository
+import com.jdm.alija.domain.repository.MapRepository
 import com.jdm.alija.presentation.service.SmsService
 import com.jdm.alija.presentation.ui.main.MainContract
 import com.jdm.alija.presentation.ui.main.MainViewModel
 import com.jdm.alija.presentation.util.Const
 import com.jdm.alija.presentation.util.Const.SERVICE_NAME
 import com.jdm.alija.presentation.util.PreferenceHelper
+import com.kakao.sdk.common.util.Utility
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import java.net.URLEncoder
+import java.util.Calendar
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -34,6 +42,8 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
         get() = R.layout.fragment_home
     private val mainViewModel : MainViewModel by activityViewModels()
     private val loadingDialog = LoadingDialog()
+    @Inject
+    lateinit var contactRepository: ContactRepository
     @Inject
     lateinit var preferenceHelper: PreferenceHelper
     override var onBackPressedCallback: OnBackPressedCallback? =
@@ -54,7 +64,6 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
 
     override fun initView() {
         showLoading()
-
         if (!preferenceHelper.getStopGuide()) {
             showUsageGuideDialog()
         }
@@ -89,18 +98,10 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
 
         }
         binding.llHomeGuide.setOnClickListener {
-            mainViewModel.deleteContact()
+
             //mainViewModel.setEvent(MainContract.MainEvent.OnClickStopService)
         }
-        /*
-        binding.on.setOnClickListener {
-            mainViewModel.setEvent(MainContract.MainEvent.OnClickStartService)
-        }
-        binding.off.setOnClickListener {
-            mainViewModel.setEvent(MainContract.MainEvent.OnClickStopService)
-        }
 
-         */
 
     }
 
@@ -152,3 +153,24 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
         val TAG = "HomeFragment"
     }
 }
+/*
+mainViewModel.deleteContact()
+            lifecycleScope.launch {
+                val placeName = URLEncoder.encode("웃는바른이치과교정과치과의원", "UTF-8")
+                mapRepository.getLocation("서울 서초구 서초대로 13 방배 마에스트로 제1동 2층") {
+                    val routeUrl = "nmap://route/public?dlat=${it.lat}&dlng=${it.long}&dname=${placeName}&appname=com.jdm.alija"
+                    val url = "nmap://search?query=${placeName}&appname=com.jdm.alija"
+
+                    Log.e("url", "${routeUrl}")
+                    val intent = Intent(Intent.ACTION_VIEW, Uri.parse(routeUrl))
+                    intent.addCategory(Intent.CATEGORY_BROWSABLE)
+                    val list = requireContext().packageManager.queryIntentActivities(intent, PackageManager.MATCH_DEFAULT_ONLY)
+                    if (list == null || list.isEmpty()) {
+                        requireContext().startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=com.nhn.android.nmap")))
+                    } else {
+                        requireContext().startActivity(intent)
+                    }
+                }
+            }
+
+ */

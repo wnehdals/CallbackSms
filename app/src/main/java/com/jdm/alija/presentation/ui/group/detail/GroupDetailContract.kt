@@ -57,6 +57,8 @@ class GroupDetailContract {
         data class OnClickOutcalActiveButton(val value: Boolean) : GroupDetailEvent()
         data class OnClickReleasecalActiveButton(val value: Boolean) : GroupDetailEvent()
         data class OnClickDuplicate(val item: SelectData): GroupDetailEvent()
+        data class OnClickDuplicate2(val item: SelectData): GroupDetailEvent()
+        data class OnClickDuplicate3(val item: SelectData): GroupDetailEvent()
         data class OnClickDay(val idx: Int, val value: Boolean): GroupDetailEvent()
         data class OnClickBeforeCheck(val item: SelectData): GroupDetailEvent()
     }

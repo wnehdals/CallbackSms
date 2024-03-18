@@ -1,6 +1,7 @@
 package com.jdm.alija.presentation.service
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
@@ -80,6 +81,10 @@ class SmsService : Service() {
 class SmsService : Service() {
     lateinit var notificationManager: NotificationManagerCompat
     var sendingMobile = ""
+    var calltype = 0
+    val callTypeIncall = 1
+    val cllTypeOutcall = 2
+    val callTypeReleaseCall = 3
     private val job = SupervisorJob()
     private val scope = CoroutineScope(Dispatchers.IO + job)
 
@@ -220,13 +225,20 @@ class SmsService : Service() {
         }
     }
 
-    suspend fun isValideDuplicate(contactEntity: ContactEntity?, duplicateIdx: Int): Boolean {
+    suspend fun isValideDuplicate(contactEntity: ContactEntity?, duplicateIdx: Int, type: Int): Boolean {
         val calendar = Calendar.getInstance()
         if (contactEntity == null) {
             return true
         } else {
             val latestCal = Calendar.getInstance()
-            latestCal.set(contactEntity.year, contactEntity.month, contactEntity.day)
+            if (type == callTypeIncall) {
+                latestCal.set(contactEntity.year, contactEntity.month, contactEntity.day)
+            } else if (type == cllTypeOutcall) {
+                latestCal.set(contactEntity.year2, contactEntity.month2, contactEntity.day2)
+            } else if (type == callTypeReleaseCall) {
+                latestCal.set(contactEntity.year3, contactEntity.month3, contactEntity.day3)
+            }
+            //latestCal.set(contactEntity.year, contactEntity.month, contactEntity.day)
             if (duplicateIdx == 0) {
                 if (caleanrToString(latestCal) == caleanrToString(calendar)) {
                     return false
@@ -308,6 +320,7 @@ class SmsService : Service() {
                     }
                     if (mobile.length > 4 && mobile.substring(0,3) == "010") {
                         sendingMobile = mobile
+                        calltype = callTypeReleaseCall
                     } else {
                         return@launch
                     }
@@ -331,7 +344,7 @@ class SmsService : Service() {
                         var today = calendar.get(Calendar.DAY_OF_WEEK)
                         if (isValidDate(today, selectGroup!!)) {
                             val contactEntity = contactRepository.selectContactByMobile(mobile)
-                            if (isValideDuplicate(contactEntity, selectGroup!!.dupicateIdx)) {
+                            if (isValideDuplicate(contactEntity, selectGroup!!.dupicateIdx3,callTypeReleaseCall)) {
                                 sendReleasecallMessage(this@SmsService, selectGroup!!, mobile)
                             }
                         }
@@ -345,7 +358,7 @@ class SmsService : Service() {
                         var today = calendar.get(Calendar.DAY_OF_WEEK)
                         if (isValidDate(today, selectGroup!!)) {
                             val contactEntity = contactRepository.selectContactByMobile(mobile)
-                            if (isValideDuplicate(contactEntity, selectGroup!!.dupicateIdx)) {
+                            if (isValideDuplicate(contactEntity, selectGroup!!.dupicateIdx3, callTypeReleaseCall)) {
                                 sendReleasecallMessage(this@SmsService, selectGroup!!, mobile)
                             }
                         }
@@ -364,6 +377,7 @@ class SmsService : Service() {
                     }
                     if (mobile.length > 4 && mobile.substring(0,3) == "010") {
                         sendingMobile = mobile
+                        calltype = cllTypeOutcall
                     } else {
                         return@launch
                     }
@@ -384,7 +398,7 @@ class SmsService : Service() {
                         var today = calendar.get(Calendar.DAY_OF_WEEK)
                         if (isValidDate(today, selectGroup!!)) {
                             val contactEntity = contactRepository.selectContactByMobile(mobile)
-                            if (isValideDuplicate(contactEntity, selectGroup!!.dupicateIdx)) {
+                            if (isValideDuplicate(contactEntity, selectGroup!!.dupicateIdx2,cllTypeOutcall)) {
                                 sendOutcallMessage(this@SmsService, selectGroup!!, mobile)
                             }
                         }
@@ -398,7 +412,7 @@ class SmsService : Service() {
                         var today = calendar.get(Calendar.DAY_OF_WEEK)
                         if (isValidDate(today, selectGroup!!)) {
                             val contactEntity = contactRepository.selectContactByMobile(mobile)
-                            if (isValideDuplicate(contactEntity, selectGroup!!.dupicateIdx)) {
+                            if (isValideDuplicate(contactEntity, selectGroup!!.dupicateIdx2, cllTypeOutcall)) {
                                 sendOutcallMessage(this@SmsService, selectGroup!!, mobile)
 
                             }
@@ -419,6 +433,7 @@ class SmsService : Service() {
                     }
                     if (mobile.length > 4 && mobile.substring(0,3) == "010") {
                         sendingMobile = mobile
+                        calltype = callTypeIncall
                     } else {
                         return@launch
                     }
@@ -439,7 +454,7 @@ class SmsService : Service() {
                         var today = calendar.get(Calendar.DAY_OF_WEEK)
                         if (isValidDate(today, selectGroup!!)) {
                             val contactEntity = contactRepository.selectContactByMobile(mobile)
-                            if (isValideDuplicate(contactEntity, selectGroup!!.dupicateIdx)) {
+                            if (isValideDuplicate(contactEntity, selectGroup!!.dupicateIdx, callTypeIncall)) {
                                 sendIncallMessage(this@SmsService, selectGroup!!, mobile)
                             }
                         }
@@ -453,7 +468,7 @@ class SmsService : Service() {
                         var today = calendar.get(Calendar.DAY_OF_WEEK)
                         if (isValidDate(today, selectGroup!!)) {
                             val contactEntity = contactRepository.selectContactByMobile(mobile)
-                            if (isValideDuplicate(contactEntity, selectGroup!!.dupicateIdx)) {
+                            if (isValideDuplicate(contactEntity, selectGroup!!.dupicateIdx, callTypeIncall)) {
                                 sendIncallMessage(this@SmsService, selectGroup!!, mobile)
                             }
                         }
@@ -467,16 +482,47 @@ class SmsService : Service() {
                 scope.launch {
                     var calendar = Calendar.getInstance()
                     if (!sendingMobile.isNullOrEmpty()) {
-                        val contactEntity = ContactEntity(
-                            sendingMobile,
-                            sendingMobile,
-                            "",
-                            calendar.get(Calendar.YEAR),
-                            calendar.get(Calendar.MONTH),
-                            calendar.get(Calendar.DATE),
-                            calendar.get(Calendar.HOUR_OF_DAY),
-                            calendar.get(Calendar.MINUTE)
-                        )
+
+
+                        val contactEntity = when (calltype) {
+                            callTypeIncall -> {
+                                ContactEntity(
+                                    (0..Int.MAX_VALUE-1).random(),
+                                    sendingMobile,
+                                    "",
+                                    year = calendar.get(Calendar.YEAR),
+                                    month = calendar.get(Calendar.MONTH),
+                                    day = calendar.get(Calendar.DATE),
+                                    hour = calendar.get(Calendar.HOUR_OF_DAY),
+                                    minute = calendar.get(Calendar.MINUTE)
+                                )
+                            }
+                            cllTypeOutcall -> {
+                                ContactEntity(
+                                    (0..Int.MAX_VALUE-1).random(),
+                                    sendingMobile,
+                                    "",
+                                    year2 = calendar.get(Calendar.YEAR),
+                                    month2 = calendar.get(Calendar.MONTH),
+                                    day2 = calendar.get(Calendar.DATE),
+                                    hour = calendar.get(Calendar.HOUR_OF_DAY),
+                                    minute = calendar.get(Calendar.MINUTE)
+                                )
+                            }
+                            else -> {
+                                ContactEntity(
+                                    (0..Int.MAX_VALUE-1).random(),
+                                    sendingMobile,
+                                    "",
+                                    year3 = calendar.get(Calendar.YEAR),
+                                    month3 = calendar.get(Calendar.MONTH),
+                                    day3 = calendar.get(Calendar.DATE),
+                                    hour = calendar.get(Calendar.HOUR_OF_DAY),
+                                    minute = calendar.get(Calendar.MINUTE)
+                                )
+                            }
+
+                        }
                         contactRepository.insert(contactEntity)
                         var name = ""
                         val contacts = mobileUseCase.invoke()
@@ -510,6 +556,7 @@ class SmsService : Service() {
                         }
 
                         sendingMobile = ""
+                        calltype = 0
                     }
                 }
             }

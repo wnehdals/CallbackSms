@@ -5,11 +5,13 @@ import com.jdm.alija.data.repository.MobileRepositoryImpl
 import com.jdm.alija.data.repository.GalleryRepositoryImpl
 import com.jdm.alija.data.repository.ContactRepositoryImpl
 import com.jdm.alija.data.repository.GroupRepositoryImpl
+import com.jdm.alija.data.repository.MapRepositoryImpl
 import com.jdm.alija.domain.repository.BlackRepository
 import com.jdm.alija.domain.repository.MobileRepository
 import com.jdm.alija.domain.repository.GalleryRepository
 import com.jdm.alija.domain.repository.ContactRepository
 import com.jdm.alija.domain.repository.GroupRepository
+import com.jdm.alija.domain.repository.MapRepository
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
@@ -36,5 +38,9 @@ abstract class RepositoryModule {
     @Singleton
     @Binds
     abstract fun bindBlackRepository(blackRepository: BlackRepositoryImpl) : BlackRepository
+
+    @Singleton
+    @Binds
+    abstract fun bindMapRepository(mapRepository: MapRepositoryImpl) : MapRepository
 
 }

@@ -23,7 +23,9 @@ android {
         targetSdk = 34
         versionCode = 5
         versionName = "1.0.0"
-
+        buildConfigField("String", "kakao_native_app_key", getPropertyKey("kakao_native_app_key"))
+        buildConfigField("String", "kakao_rest_api_key", getPropertyKey("kakao_rest_api_key"))
+        resValue("string", "kakao_oauth_host", getPropertyKey("kakao_oauth_host"))
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
     signingConfigs {
@@ -146,6 +148,15 @@ dependencies {
     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
     //implementation("com.klinkerapps:android-smsmms:5.2.6")
     implementation("androidx.coordinatorlayout:coordinatorlayout:1.2.0")
+
+    implementation("com.kakao.sdk:v2-all:2.20.0") // 전체 모듈 설치, 2.11.0 버전부터 지원
+    implementation("com.kakao.sdk:v2-user:2.20.0") // 카카오 로그인 API 모듈
+
+    val sandwich_version = "1.3.7"
+    implementation ("com.github.skydoves:sandwich:$sandwich_version")
+    implementation ("com.github.skydoves:sandwich-serialization:$sandwich_version")
+
+
 }
 fun getPropertyKey(propertyKey: String): String {
     val nullableProperty: String? = gradleLocalProperties(rootDir).getProperty(propertyKey)

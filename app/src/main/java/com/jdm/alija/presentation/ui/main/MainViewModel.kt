@@ -3,6 +3,7 @@ package com.jdm.alija.presentation.ui.main
 import androidx.lifecycle.viewModelScope
 import com.jdm.alija.base.BaseViewModel
 import com.jdm.alija.domain.repository.ContactRepository
+import com.jdm.alija.domain.repository.MapRepository
 import com.jdm.alija.domain.usecase.CreateGroupUseCase
 import com.jdm.alija.domain.usecase.GetAllGroupUseCase
 import com.jdm.alija.presentation.ui.home.HomeFragment
@@ -16,7 +17,8 @@ import javax.inject.Inject
 class MainViewModel @Inject constructor(
     private val createGroupUseCase: CreateGroupUseCase,
     private val getAllGroupUseCase: GetAllGroupUseCase,
-    private val contactRepository: ContactRepository
+    private val contactRepository: ContactRepository,
+    private val mapRepository: MapRepository
 ): BaseViewModel<MainContract.MainViewState, MainContract.MainSideEffect, MainContract.MainEvent>(
     MainContract.MainViewState()
 ) {
@@ -47,4 +49,13 @@ class MainViewModel @Inject constructor(
             list.forEach { contactRepository.deleteSms(it) }
         }
     }
+    fun getLocation() {
+        viewModelScope.launch {
+            val query = "웃는바른이치과교정과치과의원"
+            mapRepository.getLocation(query) {
+
+            }
+        }
+    }
+
 }
