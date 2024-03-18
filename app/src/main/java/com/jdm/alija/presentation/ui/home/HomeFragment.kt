@@ -67,9 +67,10 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
         if (!preferenceHelper.getStopGuide()) {
             showUsageGuideDialog()
         }
-        Glide.with(requireContext())
-            .load("https://hizonenews.com/go/1.jpg")
-            .into(binding.ivHomeAd)
+
+        //Glide.with(requireContext())
+        //    .load("https://hizonenews.com/go/1.jpg")
+        //    .into(binding.ivHomeAd)
         //setActiveUI(isSmsServiceRunning())
     }
     private fun setActiveUI(isActive: Boolean) {

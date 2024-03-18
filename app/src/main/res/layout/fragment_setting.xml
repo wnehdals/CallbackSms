@@ -77,11 +77,13 @@
                     android:textColor="@color/gray_300"
                     android:text="@string/str_setting_title_2"
                     android:layout_marginTop="20dp"
+                    android:visibility="gone"
                     android:layout_marginHorizontal="20dp"/>
                 <androidx.appcompat.widget.AppCompatTextView
                     style="@style/Paragraph.M"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:visibility="gone"
                     android:text="@string/str_setting_title_3"
                     android:layout_marginTop="16dp"
                     android:layout_marginHorizontal="20dp"/>
@@ -90,6 +92,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginHorizontal="20dp"
+                    android:visibility="gone"
                     android:layout_marginTop="16dp"
                     android:orientation="horizontal">
                     <androidx.appcompat.widget.AppCompatTextView
@@ -108,6 +111,7 @@
                 <androidx.appcompat.widget.AppCompatTextView
                     android:layout_width="match_parent"
                     android:layout_height="8dp"
+                    android:visibility="gone"
                     android:background="@color/gray_50"
                     android:layout_marginTop="20dp"/>
                 <androidx.appcompat.widget.AppCompatTextView

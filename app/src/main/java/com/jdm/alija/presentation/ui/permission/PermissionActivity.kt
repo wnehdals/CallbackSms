@@ -123,7 +123,8 @@ class PermissionActivity : BaseActivity<ActivityPermissionBinding>() {
     }
     private fun isWhiteList(): Boolean {
         val pm = getSystemService(Context.POWER_SERVICE) as PowerManager
-        return pm.isIgnoringBatteryOptimizations(packageName)
+        //return pm.isIgnoringBatteryOptimizations(packageName)
+        return true
     }
     fun showForceUpdateDialog() {
         CommonDialog(
