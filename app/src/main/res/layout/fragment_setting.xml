@@ -64,6 +64,26 @@
                         android:src="@drawable/ic_arrow_right_black"/>
 
                 </LinearLayout>
+                <LinearLayout
+                    android:id="@+id/ll_callback_setting_telephone"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:layout_marginHorizontal="20dp"
+                    android:layout_marginTop="16dp">
+                    <androidx.appcompat.widget.AppCompatTextView
+                        style="@style/Paragraph.M"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="@string/str_setting_title_8"/>
+                    <androidx.appcompat.widget.AppCompatImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:src="@drawable/ic_arrow_right_black"/>
+
+                </LinearLayout>
                 <androidx.appcompat.widget.AppCompatTextView
                     android:layout_width="match_parent"
                     android:layout_height="8dp"

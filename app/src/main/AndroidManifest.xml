@@ -2,6 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     package="com.jdm.alija">
+
     <queries>
         <package android:name="com.nhn.android.nmap" />
     </queries>
@@ -58,6 +59,9 @@
         android:supportsRtl="false"
         android:theme="@style/Theme.Alija"
         tools:targetApi="31">
+        <activity
+            android:name=".presentation.ui.policy.PolicyActivity"
+            android:exported="false" />
         <activity
             android:name=".presentation.ui.history.HistoryActivity"
             android:exported="false" />
@@ -118,7 +122,7 @@
             android:exported="false"
             android:screenOrientation="portrait" />
 
-        <service android:name="com.android.mms.transaction.TransactionService"/>
+        <service android:name="com.android.mms.transaction.TransactionService" />
 
         <receiver
             android:name=".presentation.CallReceiver"
@@ -133,7 +137,7 @@
             android:name=".presentation.service.DeliverReceiver"
             android:enabled="true"
             android:exported="false"
-            android:taskAffinity="com.klinker.android.messaging.MMS_SENT"></receiver>
+            android:taskAffinity="com.klinker.android.messaging.MMS_SENT" />
         <!--
         <service
             android:name=".AlijaInCallServiceImpl"

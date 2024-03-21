@@ -1,0 +1,236 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    tools:context=".presentation.ui.policy.PolicyActivity">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:id="@+id/appbar_policy"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:background="@color/white"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <androidx.appcompat.widget.AppCompatImageView
+                android:id="@+id/iv_policy"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:paddingHorizontal="16dp"
+                android:src="@drawable/ic_back_black" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/tv_policy_appbar_title"
+                style="@style/Label.M"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/str_setting_title_9" />
+        </LinearLayout>
+
+        <androidx.core.widget.NestedScrollView
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/appbar_policy">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="48dp"
+                    android:orientation="horizontal">
+
+                    <LinearLayout
+                        android:id="@+id/ll_policy_top_skt"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:orientation="vertical">
+
+                        <androidx.appcompat.widget.AppCompatTextView
+                            android:id="@+id/tv_policy_skt"
+                            style="@style/Label.M"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:layout_weight="1"
+                            android:gravity="center"
+                            android:text="@string/str_skt"
+                            android:textColor="@color/c_item_select" />
+
+                        <androidx.appcompat.widget.AppCompatTextView
+                            android:id="@+id/tv_policy_top_skt"
+                            android:layout_width="match_parent"
+                            android:layout_height="1dp"
+                            android:background="@color/blue_400" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:id="@+id/ll_policy_top_kt"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:orientation="vertical">
+
+                        <androidx.appcompat.widget.AppCompatTextView
+                            android:id="@+id/tv_policy_kt"
+                            style="@style/Label.M"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:layout_weight="1"
+                            android:gravity="center"
+                            android:text="@string/str_kt"
+                            android:textColor="@color/c_item_select" />
+
+                        <androidx.appcompat.widget.AppCompatTextView
+                            android:id="@+id/tv_policy_top_kt"
+                            android:layout_width="match_parent"
+                            android:layout_height="1dp"
+                            android:background="@color/gray_100" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:id="@+id/ll_policy_top_lg"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:orientation="vertical">
+
+                        <androidx.appcompat.widget.AppCompatTextView
+                            android:id="@+id/tv_policy_lg"
+                            style="@style/Label.M"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:layout_weight="1"
+                            android:gravity="center"
+                            android:text="@string/str_lg"
+                            android:textColor="@color/c_item_select" />
+
+                        <androidx.appcompat.widget.AppCompatTextView
+                            android:id="@+id/tv_policy_top_lg"
+                            android:layout_width="match_parent"
+                            android:layout_height="1dp"
+                            android:background="@color/gray_100" />
+                    </LinearLayout>
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/ll_policy_skt"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginHorizontal="20dp"
+                    android:orientation="vertical">
+
+                    <androidx.appcompat.widget.AppCompatTextView
+                        style="@style/Label.M"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="20dp"
+                        android:text="@string/str_skt_policy_1" />
+
+                    <androidx.appcompat.widget.AppCompatTextView
+                        style="@style/Paragraph.S"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/str_skt_policy_2" />
+
+                    <androidx.appcompat.widget.AppCompatTextView
+                        style="@style/Paragraph.S"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/str_skt_policy_3" />
+
+                    <androidx.appcompat.widget.AppCompatTextView
+                        style="@style/Paragraph.S"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="20dp"
+                        android:text="@string/str_skt_policy_4" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/ll_policy_kt"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginHorizontal="20dp"
+                    android:orientation="vertical"
+                    android:visibility="gone">
+
+                    <androidx.appcompat.widget.AppCompatTextView
+                        style="@style/Label.M"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="20dp"
+                        android:text="@string/str_skt_policy_1" />
+
+                    <androidx.appcompat.widget.AppCompatTextView
+                        style="@style/Paragraph.S"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/str_kt_policy_2" />
+
+                    <androidx.appcompat.widget.AppCompatTextView
+                        style="@style/Paragraph.S"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/str_kt_policy_3" />
+
+                    <androidx.appcompat.widget.AppCompatTextView
+                        style="@style/Paragraph.S"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="20dp"
+                        android:text="@string/str_skt_policy_4" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/ll_policy_lg"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginHorizontal="20dp"
+                    android:orientation="vertical"
+                    android:visibility="gone">
+
+                    <androidx.appcompat.widget.AppCompatTextView
+                        style="@style/Label.M"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="20dp"
+                        android:text="@string/str_skt_policy_1" />
+
+                    <androidx.appcompat.widget.AppCompatTextView
+                        style="@style/Paragraph.S"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/str_lg_policy_2" />
+
+                    <androidx.appcompat.widget.AppCompatTextView
+                        style="@style/Paragraph.S"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/str_lg_policy_3" />
+
+                    <androidx.appcompat.widget.AppCompatTextView
+                        style="@style/Paragraph.S"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="20dp"
+                        android:text="@string/str_skt_policy_4" />
+                </LinearLayout>
+            </LinearLayout>
+        </androidx.core.widget.NestedScrollView>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</layout>

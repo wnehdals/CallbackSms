@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import com.jdm.alija.databinding.ItemAdvertiseBinding
 import com.jdm.alija.databinding.ItemGroupBinding
 import com.jdm.alija.domain.model.Advertise
@@ -31,8 +32,9 @@ class AdvertisePagerAdapte (
     inner class ViewHolderPage(val binding: ItemAdvertiseBinding) : RecyclerView.ViewHolder(binding.root) {
         fun onBind(data: Advertise) {
             binding.clItemAdvertise.setOnClickListener { onClickItem(data) }
-            binding.tvItemAdvertise.text = data.title
-            binding.clItemAdvertise.setBackgroundColor(ContextCompat.getColor(context, data.color))
+            Glide.with(context)
+                .load(data.title)
+                .into(binding.tvItemAdvertise)
         }
     }
 }

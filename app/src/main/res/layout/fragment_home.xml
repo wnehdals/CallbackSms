@@ -43,6 +43,15 @@
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
+                <androidx.viewpager2.widget.ViewPager2
+                    android:id="@+id/vp_message"
+                    android:layout_width="match_parent"
+                    android:layout_height="140dp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+
 
                 <com.airbnb.lottie.LottieAnimationView
                     android:id="@+id/lv_home"
@@ -51,7 +60,7 @@
                     app:layout_constraintBottom_toTopOf="@+id/ll_home_guide"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/vp_message"
                     app:lottie_autoPlay="false"
                     app:lottie_loop="true"
                     app:lottie_rawRes="@raw/active_blue400" />
@@ -143,11 +152,7 @@
                     <androidx.appcompat.widget.AppCompatTextView
                         android:layout_width="match_parent"
                         android:layout_height="20dp" />
-                    <androidx.appcompat.widget.AppCompatImageView
-                        android:id="@+id/iv_home_ad"
-                        android:scaleType="fitXY"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"/>
+
                 </LinearLayout>
             </androidx.constraintlayout.widget.ConstraintLayout>
         </androidx.core.widget.NestedScrollView>

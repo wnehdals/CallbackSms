@@ -13,6 +13,7 @@ import com.jdm.alija.presentation.ui.main.MainActivity
 import com.jdm.alija.presentation.ui.main.MainContract
 import com.jdm.alija.presentation.ui.main.MainViewModel
 import com.jdm.alija.presentation.ui.msg.set.MessageActivity
+import com.jdm.alija.presentation.ui.policy.PolicyActivity
 import com.jdm.alija.presentation.util.slideLeft
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -33,6 +34,9 @@ class SettingFragment : BaseFragment<FragmentSettingBinding>() {
     override fun initEvent() {
         binding.llCallbackSetting.setOnClickListener {
             (requireActivity() as MainActivity).goToActivity(MessageActivity.getIntent(requireContext(), "CallBack"))
+        }
+        binding.llCallbackSettingTelephone.setOnClickListener {
+            (requireActivity() as MainActivity).goToActivity(PolicyActivity.getIntent(requireContext()))
         }
         binding.llSettingGroup.setOnClickListener {
             (requireActivity() as MainActivity).goToActivity(GroupActivity.getIntent(requireContext()))

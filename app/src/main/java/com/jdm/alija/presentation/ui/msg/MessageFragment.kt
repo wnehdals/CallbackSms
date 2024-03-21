@@ -51,7 +51,7 @@ class MessageFragment : BaseFragment<FragmentMessageBinding>() {
         }
     }
     lateinit var job : Job
-    private val adList = listOf<Advertise>(Advertise(R.color.kakao_yellow, "카카오"), Advertise(R.color.naver_green, "네이버"))
+    private val adList = listOf<Advertise>()
     private val advertisePagerAdapter : AdvertisePagerAdapte by lazy {
         AdvertisePagerAdapte(requireContext(), adList, this::onClickAd)
     }

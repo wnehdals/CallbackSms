@@ -43,6 +43,38 @@
                 android:text="@string/str_complete"
                 android:textColor="@color/white" />
         </LinearLayout>
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/tv_message_detail_warning1"
+            style="@style/Paragraph.S"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toBottomOf="@+id/appbar_message_detail"
+            android:layout_marginHorizontal="20dp"
+            android:text="@string/str_usage_guide7"/>
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/tv_message_detail_warning2"
+            style="@style/Paragraph.S"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toBottomOf="@+id/tv_message_detail_warning1"
+            android:layout_marginHorizontal="20dp"
+            android:text="@string/str_usage_guide8"/>
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/tv_message_detail_warning3"
+            style="@style/Paragraph.S"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toBottomOf="@+id/tv_message_detail_warning2"
+            android:layout_marginHorizontal="20dp"
+            android:text="@string/str_usage_guide9"/>
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/tv_message_detail_warning4"
+            style="@style/Paragraph.S"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toBottomOf="@+id/tv_message_detail_warning3"
+            android:layout_marginHorizontal="20dp"
+            android:text="@string/str_usage_guide10"/>
 
 
         <androidx.core.widget.NestedScrollView
@@ -53,7 +85,7 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/appbar_message_detail">
+            app:layout_constraintTop_toBottomOf="@+id/tv_message_detail_warning4">
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
